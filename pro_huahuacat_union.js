@@ -94,7 +94,6 @@
 // @require           https://greasyfork.org/scripts/454236-findandreplacedomtext-huahuacat/code/findAndReplaceDOMText-huahuacat.js?version=1112990
 // @connect           bilibili.com
 // @connect           sct.staticj.top
-// @connect           gitlab.com
 // @connect			  tt.shuqiandiqiu.com
 // @connect           j.jiayoushichang.com
 // @grant             unsafeWindow
