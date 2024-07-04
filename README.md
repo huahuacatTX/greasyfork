@@ -25,7 +25,6 @@
 5. 5、如果某个接口存在侵权行为，请联系接口链接站长处理（脚本代码明文公开显示，链接源码可查），脚本对此不承担任何法律责任。
 6. 6、为了维护更好的创作空间，建议从正规渠道购买视频网站会员，尊重版权，为创作鼓掌！
 
-
 ## ✅安装Tampermonkey(篡改猴)，必须在浏览器安装
 <details>
 	<summary>Windows安装(展开)</summary><a target="_blank" href="https://chromewebstore.google.com/detail/%E7%AF%A1%E6%94%B9%E7%8C%B4/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=zh-CN">Google Chrome</a> (需要科学上网)
@@ -88,7 +87,6 @@
 	<summary>【6】自定义解析图标位置</summary>
 	<img src="https://pic.rmb.bdstatic.com/bjh/c578262c6a28d74eac20e74425e5e420.png" width="100%" />
 </details>
-
 
 ## ⚠ 风险告知：
 使用脚本前请明确脚本功能，以及使用脚本可能带来的风险（脚本本身绝对安全可靠，风险通常来自第三放链接，需要用户慧眼明辨。在接入第三方链接时，脚本也会仔细排查）。继续使用即代表你已经充分了解，并自愿承担可能造成的损失，请知悉！
