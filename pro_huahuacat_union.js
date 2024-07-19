@@ -3,7 +3,7 @@
 // @name:zh           【PRO版本】B站哔哩哔哩使用增强，全网VIP视频免费破解去广告，知乎使用增强，短视频无水印下载，油管、Facebook等国外视频解析下载等😈
 // @name:zh-TW		  【PRO版本】B站嗶哩嗶哩使用增強，全網VIP視頻免費破解去廣告，知乎使用增強，短視頻無水印下載，油管、Facebook等國外視頻解析下載等😈
 // @namespace         bilibili_namespace_20230625
-// @version           2.1.1
+// @version           2.1.2
 // @description       功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
 // @description:zh    功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
 // @description:zh-TW 功能可選擇性開啟：1、B站使用增強：支援視頻下載(👉支援多P批量快速下載👈)、瀏覽記錄提示、一鍵三連、自動簽到、描述文本網址轉連結等；2、全網VIP視頻解析：愛奇藝、騰訊、優酷、bilibili等視頻免費解析(支援自定義解析介面)；3、知乎使用助手：內容種類標識、問答顯示優化、視頻下載等；4、短視頻去水印下載：支援知乎、抖音、快手等；5、油管、Facebook等國外視頻解析下載；🔥6、搜索引擎功能增強,百度添加網址顯示，google結果新標籤頁開啟燈,導航可自定義網址【指令碼或直譯式程式長期維護更新，完全免費，無廣告，僅限學習交流！！】
@@ -84,6 +84,7 @@
 // @include           *://detail.vip.com/detail-*
 // @include           *://www.vipglobal.hk/detail-*
 // @include           *://list.vip.com/*.html
+// @include           *://*.douyinvod.com/*
 // @exclude           *://login.taobao.com/*
 // @exclude           *://uland.taobao.com/*
 // @exclude           *://www.taobao.com/*
@@ -852,7 +853,7 @@ function SuperVideoHelper(originalInterfaceList){
 												1、<b style='color:red;'>需要使用VIP视频解析的，请自行添加接口</b>，版权问题请联系相关解析接口所有者，脚本不承担相关责任！"<br>
 												2、为创造良好的创作氛围，请大家支持正版！<br>
 												3、脚本仅限个人学习交流，使用即已代表您已经充分了解相关问题，否则后果自负，特此声明！<br>
-												4、<b>脚本源码托管地址（含解析接口、使用教程）：<a href="https://github.com/huahuacatTX/greasyfork" target="_blank" style="padding:0px 5px;color:red;">点我查看</a></b>
+												
 											</div>
 										</div>
 									</div>
@@ -1109,7 +1110,7 @@ function SuperVideoHelperMobile(originalInterfaceList){
 									2、为创造良好的创作氛围，请大家支持正版！
 									3、脚本仅限个人学习交流，切勿用于任何商业等其它用途！
 									4、继续使用，即表明你已经明确使用脚本可能带来的风险，且愿意自行承担相关风险，对于风险脚本不承担任何责任！
-									4、<b>脚本源码托管地址（含解析接口、使用教程）：<a href="https://github.com/huahuacatTX/greasyfork" target="_blank" style="padding:0px 5px;color:red;">点我查看</a></b>
+									
 								</div>
 							</div>
 					</div>
@@ -1662,7 +1663,7 @@ function BilibiliHelper(){
 					#bilibili_exti_9787fjfh12j{
 						position:fixed;
 						left:-30px;
-						top:200px;
+						top:250px;
 						opacity:0.6;
 						transition: 0.3s;
 					}
@@ -1681,6 +1682,7 @@ function BilibiliHelper(){
 				`;
 				let htmlText=`
 					<div id="bilibili_exti_9787fjfh12j">
+						
 						<div class="self_s_btn" id="download_s_`+randomNumber+`">下载视频</div>
 						<div class="self_s_btn" id="focus_s_`+randomNumber+`">一键三连</div>
 					</div>
@@ -1689,7 +1691,7 @@ function BilibiliHelper(){
 				//添加下载等操作按钮
 				commonFunctionObject.GMaddStyle(cssText);
 				$("body").append(htmlText);
-				
+								
 				//创建弹框
 				this.createModals();
 				
@@ -1735,6 +1737,9 @@ function BilibiliHelper(){
 					$("#arc_toolbar_report .video-like").click(); // 点赞
 					$("#arc_toolbar_report .video-coin").click(); // 投币
 					// $("#arc_toolbar_report .video-fav").click(); // 收藏
+				});
+				$("body").on("click","#pro_s_"+randomNumber, function(){
+					commonFunctionObject.GMopenInTab("https://github.com/huahuacatTX/greasyfork");
 				});
 			}
 			this.start = function(){
@@ -1847,50 +1852,46 @@ function BilibiliHelper(){
 	 */
 	this.textToLinkFunction = function() {
 		function textToLinkObject(){
-			this.link = function(areaElements){
+			this.link = function(selector){
 				const current_href = window.location.href;
-				for(let i=0; i<areaElements.length; i++){
-					let textToLinkArea = document.querySelector(areaElements[i]);
-					if(!textToLinkArea){
-						continue;
-					}
-					findAndReplaceDOMText(textToLinkArea, {
-						find: /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/g,
-						replace: function (e, t) {
-							let text = e.text;
-							let element = null;
-							if(text.indexOf("bilibili.com")==-1 && /^(http|ftp|https)/i.test(text)){
-								element = document.createElement("a");
-								element.setAttribute("href", text)
-								element.setAttribute("target", "_blank");
-								element.style.color="#00AEEC";
-							}else{
-								element = document.createElement("span");
-							}
-							element.innerText = text;
-							return element;
-						}, 
-						preset: "prose"
-					});
+				const textToLinkArea = document.querySelector(selector);
+				
+				if(!textToLinkArea){
+					return;
 				}
+				findAndReplaceDOMText(textToLinkArea, {
+					find: /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/g,
+					replace: function (e, t) {
+						let text = e.text;
+						let element = null;
+						if(text.indexOf("bilibili.com")==-1 && /^(http|ftp|https)/i.test(text)){
+							element = document.createElement("a");
+							element.setAttribute("href", text)
+							element.setAttribute("target", "_blank");
+							element.style.color="#00AEEC";
+						}else{
+							element = document.createElement("span");
+						}
+						element.innerText = text;
+						return element;
+					}, 
+					preset: "prose"
+				});
+				
 			}
 			this.start = function(){
-				const areaElements = ["#v_desc", "#article-content"];
-				this.link(areaElements);
-				let MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
-				let bodyMutationObserver = new MutationObserver(()=>{
-					this.link(areaElements);
+				const selector = "#v_desc";
+				this.link(selector);
+				
+				const MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
+				const bodyMutationObserver = new MutationObserver(()=>{
+					this.link(selector);
 				});
-				let observerElementObj = null;
-				for(let i=0; i<areaElements.length; i++){
-					observerElementObj = document.querySelector(areaElements[i]);
-					if(observerElementObj){
-						break;
-					}
-				}
-				if(observerElementObj){
-					bodyMutationObserver.observe(observerElementObj, 
-						{"characterData":true,"attributes":true, "childList":true},
+				
+				const element = document.querySelector(selector);
+				if(element){
+					bodyMutationObserver.observe(element, 
+						{"characterData":true, "attributes":true, "childList":true},
 					);
 				}
 			}
@@ -2180,7 +2181,7 @@ function SearchEnginesNavigation(){
 				// console.log("使用本地");
 			}else{
 				let currentMS = (new Date()).getTime();
-				let delayMS = 1000 * 60 * 60 * 6;
+				let delayMS = 1000 * 60 * 5;
 				let serverNavigationData = commonFunctionObject.GMgetValue(self.serverNavigationkey, null);
 				if(!serverNavigationData || (currentMS - serverNavigationData.ms) > delayMS){
 					//拉取服务器本次不用，下次再使用
@@ -2578,10 +2579,11 @@ try{
 	console.log("搜索引擎导航：error："+e);
 }
 	function QueryCoupon(){
+	this.createQrcodeIsResult = true;
 	this.isRun = function(){
 		var urls=["detail.tmall.com", "item.taobao.com", "item.jd.com", "item.yiyaojd.com", 
 			"npcitem.jd.hk", "detail.tmall.hk", "detail.vip.com", "www.vipglobal.hk"];
-		for(var i=0; i<urls.length;i++){
+		for(var i=0; i<urls.length; i++){
 			if(window.location.host.indexOf(urls[i])!=-1){
 				return true;
 			}
@@ -2693,78 +2695,86 @@ try{
 		}
 	};
 	this.createCoupon = async function(platform, data){
-		if(!data || data==="null" || !data.hasOwnProperty("css") || !data.hasOwnProperty("html")|| !data.hasOwnProperty("handler")){
-			return;
-		}
-		const cssText = data.css, htmlText = data.html, handler = data.handler, templateId = data.templateId;
-		if(!cssText || !htmlText || !handler){
-			return;
-		}
-		$("body").prepend("<style>"+cssText+"</style>");
-		
-		var handlers = handler.split("@");
-		for(var i=0; i<handlers.length; i++){
-			var $handler = $(""+handlers[i]+"");
-			if(platform=="taobao"){
-				$handler.parent().after(htmlText);
-			}else if(platform=="tmall"){
-				$handler.parent().after(htmlText);
-			}else if(platform=="jd"){
-				$handler.after(htmlText);
-			}else if(platform=="vpinhui"){
-				$handler.after(htmlText);
+		try{
+			this.createQrcodeIsResult = false;
+			if(!data || data==="null" || !data.hasOwnProperty("css") || !data.hasOwnProperty("html")|| !data.hasOwnProperty("handler")){
+				return;
 			}
-		}
-		
-		const $llkk = $("#"+templateId);
-		if($llkk.length == 0){
-			return;
-		}
-		
-		const couponId = $llkk.data("id");
-		const goodsPrivateUrl = "http://tt.shuqiandiqiu.com/api/private/change/coupon?no=5&v=1.0.2&platform="+platform+"&id=";
-		
-		if(!/\d/.test(couponId)){
-			return;
-		}
-		
-		setInterval(()=>{
-			$llkk.find("*").each(function(){
-				$(this).removeAttr("data-spm-anchor-id");
-			});
-		},400);
-		
-		const couponElementA = $llkk.find("a[name='cpShUrl']");
-		couponElementA.unbind("click").bind("click", ()=>{
-			event.stopPropagation();
-			event.preventDefault();
-			this.request("GET", goodsPrivateUrl+couponId, null).then((privateResultData)=>{
-				if(privateResultData.result==="success" && !!privateResultData.json){
-					let url = JSON.parse(privateResultData.json).url;
-					if(!!url) GM_openInTab(url, {active:true});
-				}
-			});
-		});
-							
-		//canvas画二维码
-		var $canvasElement = $("#ca"+templateId);
-		if($canvasElement.length == 0){
-			return;
-		}
-		const qrcodeResultData = await this.request("GET", goodsPrivateUrl+couponId, null);
-		if(!!qrcodeResultData && qrcodeResultData.result==="success" && !!qrcodeResultData.json){
-			let img = JSON.parse(qrcodeResultData.json).img;
-			if(!!img){
-				var canvasElement = document.getElementById("ca"+templateId);
-				var width = canvasElement.getAttribute("width");
-				var height = canvasElement.getAttribute("height");
-				var cxt = canvasElement.getContext("2d");
-				var imgData = new Image();
-				imgData.src = img;
-				imgData.onload=function(){
-					cxt.drawImage(imgData, 0, 0, width, height);
+			const cssText = data.css, htmlText = data.html, handler = data.handler, templateId = data.templateId;
+			if(!cssText || !htmlText || !handler){
+				return;
+			}
+			$("body").prepend("<style>"+cssText+"</style>");
+			
+			var handlers = handler.split("@");
+			for(var i=0; i<handlers.length; i++){
+				var $handler = $(""+handlers[i]+"");
+				if(platform=="taobao"){
+					$handler.parent().after(htmlText);
+				}else if(platform=="tmall"){
+					$handler.parent().after(htmlText);
+				}else if(platform=="jd"){
+					$handler.after(htmlText);
+				}else if(platform=="vpinhui"){
+					$handler.after(htmlText);
 				}
 			}
+			
+			const $llkk = $("#"+templateId);
+			if($llkk.length == 0){
+				return;
+			}
+			
+			const couponId = $llkk.data("id");
+			const goodsPrivateUrl = "http://tt.shuqiandiqiu.com/api/private/change/coupon?no=5&v=1.0.2&platform="+platform+"&id=";
+			
+			if(!/\d/.test(couponId)){
+				return;
+			}
+			
+			setInterval(()=>{
+				$llkk.find("*").each(function(){
+					$(this).removeAttr("data-spm-anchor-id");
+				});
+			},400);
+			
+			const couponElementA = $llkk.find("a[name='cpShUrl']");
+			couponElementA.unbind("click").bind("click", ()=>{
+				event.stopPropagation();
+				event.preventDefault();
+				this.request("GET", goodsPrivateUrl+couponId, null).then((privateResultData)=>{
+					if(privateResultData.result==="success" && !!privateResultData.json){
+						let url = JSON.parse(privateResultData.json).url;
+						if(!!url) GM_openInTab(url, {active:true});
+					}
+				});
+			});
+								
+			//canvas画二维码
+			var $canvasElement = $("#ca"+templateId);
+			if($canvasElement.length == 0){
+				return;
+			}
+			const qrcodeResultData = await this.request("GET", goodsPrivateUrl+couponId, null);
+			if(!!qrcodeResultData && qrcodeResultData.result==="success" && !!qrcodeResultData.json){
+				let img = JSON.parse(qrcodeResultData.json).img;
+				if(!!img){
+					var canvasElement = document.getElementById("ca"+templateId);
+					var width = canvasElement.getAttribute("width");
+					var height = canvasElement.getAttribute("height");
+					var cxt = canvasElement.getContext("2d");
+					var imgData = new Image();
+					imgData.src = img;
+					imgData.onload=function(){
+						cxt.drawImage(imgData, 0, 0, width, height);
+					}
+				}
+			}
+		}catch(e){
+			console.log("~~~~~~~~~~~~~~~~~~~~", e);
+		}finally{
+			//一定会执行
+			this.createQrcodeIsResult = true;
 		}
 	};
 	this.createHtml = async function(platform, goodsId, goodsName){
@@ -2782,8 +2792,21 @@ try{
 			const resutData = await this.request("GET", goodsCouponUrl, null);
 			if(!!resutData && resutData.result==="success" && !!resutData.json){
 				const json = JSON.parse(resutData.json);
-				this.createCoupon(platform, json.data);
-				this.createQrcode(platform, json.mscan);
+				await this.createCoupon(platform, json.data);
+				//开启插入检测
+				let heartms = 0;
+				const HEART_DELAY = 250, MAX_MS = 1000*20; 
+				const createResultInterval = setInterval(async ()=>{
+					if(this.createQrcodeIsResult){
+						if(document.querySelector("div[name='exist-llkbccxs-9246-hi']") || heartms>=MAX_MS){
+							clearInterval(createResultInterval);
+						}else{
+							await this.createCoupon(platform, json.data); 
+						}
+					}
+					heartms += HEART_DELAY;
+				}, HEART_DELAY);
+				await this.createQrcode(platform, json.mscan);
 			}
 		}catch(e){
 			console.log("createCouponHtml",e);
@@ -3075,7 +3098,10 @@ try{
 		 */
 		const _self = this;
 		function run(){
-			let downloadOption = [{name:'',id:'toServer'},{name:'打开视频源',id:'toLink'}];
+			if(window.location.host !== "www.douyin.com"){
+				return;
+			}
+			let downloadOption = [{name:'',id:'toServer'}, {name:'打开视频(可下载)',id:'toLink'}];
 			let videoElements = document.querySelectorAll('video');
 			if(videoElements.length == 0) return;
 			 
@@ -3174,9 +3200,9 @@ try{
 				let downloadHtml = '';
 				downloadOption.forEach(function(item){
 					if(item.id=="toServer"){
-						downloadHtml += `<div style="text-align:center;" class="item ${item.id}" id="${item.id}${videoId}">AI视频分析<span style="color:red;">(热门)</span></div>`;
+						downloadHtml += `<div style="text-align:center;width:100px;" class="item ${item.id}" id="${item.id}${videoId}">AI视频分析<span style="color:red;">(热门)</span></div>`;
 					}else{
-						downloadHtml += `<div style="text-align:center;" class="item ${item.id}" id="${item.id}${videoId}">${item.name}</div>`;
+						downloadHtml += `<div style="text-align:center;width:100px;" class="item ${item.id}" id="${item.id}${videoId}">${item.name}</div>`;
 					}
 	
 				})
@@ -3192,26 +3218,36 @@ try{
 				if(toLinkDom){
 					toLinkDom.addEventListener('click',function(){
 						if(url.match(/^blob/)){
-							commonFunctionObject.webToast({"message":"加密视频地址，无法直接打开", "background":"#141414"});
+							commonFunctionObject.webToast({"message":"加密视频无法直接打开。可复制分享链，重新打开页面使用“下载”", "background":"#141414"});
 						}else{
 							window.open(url);
 						}
 					})
 				}
 	
-				//直接下载
-				let toDownloadDom = playContainer.querySelector('#toServer'+videoId);
-				if(toDownloadDom){
-					toDownloadDom.addEventListener('click',function(){
+				let toAi = playContainer.querySelector('#toServer'+videoId);
+				if(toAi){
+					toAi.addEventListener('click',function(){
 						window.open("https://www.quzhuanpan.com/redirect/d?t="+(new Date()).getTime()+"&url="+window.location.href);
 					})
 				}
 			}
 		}
+		//抖音视频下载需要鼠标右键保存
+		function player(){
+			if(window.location.host.indexOf(".douyinvod.com")!=-1){
+				var html=`<div style="position:fixed;left:15px;bottom:300px;background-color:#ccc;width:200px;font-size:14px;padding:5px;">
+					<div style="color:red;font-weight:bold;">直接下载已经失效，需要在视频框点击：鼠标右键 ->视频另存为，然后保存视频</div>
+					<div style="margin-top:15px;"># 纯纯的资源分享，需要的自取：<a target="_blank" href="https://www.quzhuanpan.com/redirect/pan?t=`+(new Date()).getTime()+`&url=`+window.location.href+`">点我查看【建议保存】</a></div>
+					<div style="margin-top:15px;"># 效率工具，免费AI总结/摘要/改写/翻译，支持搜索学术文献一键阅读：<a target="_blank" href="https://www.quzhuanpan.com/redirect/d?t=`+(new Date()).getTime()+`&url=`+window.location.href+`">点我查看</a></div>
+				</div>`;
+				$("body").append(html);
+			}
+		}
 		setInterval(function(){
 			run();
 		}, 500);
-		
+		player();
 	};
 	this.kuaishouVideoDownloader = function(){
 		if(window.location.host !== "www.kuaishou.com"){
