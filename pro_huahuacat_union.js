@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name              【PRO版本】B站哔哩哔哩使用增强，全网VIP视频免费破解去广告，知乎使用增强，短视频无水印下载，油管、Facebook等国外视频解析下载等😈
-// @name:zh           【PRO版本】B站哔哩哔哩使用增强，全网VIP视频免费破解去广告，知乎使用增强，短视频无水印下载，油管、Facebook等国外视频解析下载等😈
-// @name:zh-TW		  【PRO版本】B站嗶哩嗶哩使用增強，全網VIP視頻免費破解去廣告，知乎使用增強，短視頻無水印下載，油管、Facebook等國外視頻解析下載等😈
+// @name              【PRO版本】B站哔哩哔哩使用增强，全网VIP视频免费破解去广告，知乎使用增强，短视频无水印下载，油管、Facebook、Tiktok等国外视频解析下载等😈
+// @name:zh           【PRO版本】B站哔哩哔哩使用增强，全网VIP视频免费破解去广告，知乎使用增强，短视频无水印下载，油管、Facebook、Tiktok等国外视频解析下载等等国外视频解析下载等😈
+// @name:zh-TW		  【PRO版本】B站嗶哩嗶哩使用增強，全網VIP視頻免費破解去廣告，知乎使用增強，短視頻無水印下載，油管、Facebook、Tiktok等国外视频解析下载等等國外視頻解析下載等😈
 // @namespace         bilibili_namespace_20230625
-// @version           2.1.2
-// @description       功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
-// @description:zh    功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
-// @description:zh-TW 功能可選擇性開啟：1、B站使用增強：支援視頻下載(👉支援多P批量快速下載👈)、瀏覽記錄提示、一鍵三連、自動簽到、描述文本網址轉連結等；2、全網VIP視頻解析：愛奇藝、騰訊、優酷、bilibili等視頻免費解析(支援自定義解析介面)；3、知乎使用助手：內容種類標識、問答顯示優化、視頻下載等；4、短視頻去水印下載：支援知乎、抖音、快手等；5、油管、Facebook等國外視頻解析下載；🔥6、搜索引擎功能增強,百度添加網址顯示，google結果新標籤頁開啟燈,導航可自定義網址【指令碼或直譯式程式長期維護更新，完全免費，無廣告，僅限學習交流！！】
+// @version           2.1.3
+// @description       功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook、Tiktok等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
+// @description:zh    功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook、Tiktok等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
+// @description:zh-TW 功能可選擇性開啟：1、B站使用增強：支援視頻下載(👉支援多P批量快速下載👈)、瀏覽記錄提示、一鍵三連、自動簽到、描述文本網址轉連結等；2、全網VIP視頻解析：愛奇藝、騰訊、優酷、bilibili等視頻免費解析(支援自定義解析介面)；3、知乎使用助手：內容種類標識、問答顯示優化、視頻下載等；4、短視頻去水印下載：支援知乎、抖音、快手等；5、油管、Facebook、Tiktok等國外視頻解析下載；🔥6、搜索引擎功能增強,百度添加網址顯示，google結果新標籤頁開啟燈,導航可自定義網址【指令碼或直譯式程式長期維護更新，完全免費，無廣告，僅限學習交流！！】
 // @author            huahuacat
 // @icon              data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACS0lEQVRYR8WXz2oTURTGv3MnpqhNKy1UWmxRTGdaiLSQRKkKIoK4FVrRPoHu7BMYn0B3+gQquuiuiC6kaFVsAhGEZkKqG/+Vrtp0YWsyR27KlEwz0xnnT3LgwjB37vl+97tzz9whdDiow/pwBCjofN0AJohwKQgkMxYF8Dmt0bxdnhaAQoWTXMczENJBhFvGMgqk4GY6SZXmPgvAmy/cnYijGqrwvmTVHSQup2jLvG0ByJf5EYDbUQIAeJxR6U4LQHGV1VodesTijfQxBdrkaSrL6z0Hlst8i4An7QBgYDar0lMrgM45ItxrCwDjflajnC+AtR8Gvn8zGpz9xwVOjor/Zma/ANt/GIsLNWxt8p7o4IiAmlLQP+C9pvkG+FoyUPxYs52xhFDPKIh3uRviG2ClWIdsTpHoJYymFNdliQzABBsaEZg4p+DwUftliRxAggwOC0xdidma1RaAI92Ea9OHOgcwPqlANruI1AElhsa2dBKXQJEBnDglGlvxWN/BNcE3gKyCS69b64AUlMISwEv4BpDJ3778i/Xfu5XQtFtaLq+9RiCA6gZj/dcuQN8Audod6kvodYZuz9k7UOK7JPDAbXAY/WxgLjtGDy2f408VPi8MLIUh4JbDELhwNknvLQDyQNoTh87AkFuCIP0E/NzcgWYeTC0bdrkNp6Lm9bc4YM4qr/NzEGaCzNJxLONFRqMbzf22JSu/wlcphhwzpsIAIcIHriGXGadX+/MdWDPflTjRxcH+kLYJhYtj5Piz4/0gF4YVNjk6DvAPDb0aMEr8/nEAAAAASUVORK5CYII=
 // @include           *://*.youku.com/v_*
@@ -65,12 +65,8 @@
 // @include           *://www.bilibili.com/read/**
 // @include      	  *://*.zhihu.com/*
 // @include           *://www.douyin.com/*
+// @include           *://*.douyinvod.com/*
 // @include           *://www.kuaishou.com/*
-// @include           *://www.youtube.com
-// @include           *://www.youtube.com/
-// @include           *://www.youtube.com/watch*
-// @include           *://www.facebook.com/*
-// @include           *://yt1s.com/facebook-downloader
 // @include           *://*.taobao.com/*
 // @include           *://*.tmall.com/*
 // @include           *://chaoshi.detail.tmall.com/*
@@ -84,19 +80,25 @@
 // @include           *://detail.vip.com/detail-*
 // @include           *://www.vipglobal.hk/detail-*
 // @include           *://list.vip.com/*.html
-// @include           *://*.douyinvod.com/*
+// @include           *://www.tiktok.com/@*
+// @include           *://www.youtube.com/watch**
+// @include           *://www.youtube.com/shorts**
 // @exclude           *://login.taobao.com/*
 // @exclude           *://uland.taobao.com/*
 // @exclude           *://www.taobao.com/*
 // @exclude           *://map.taobao.com/*
 // @exclude           *://jingfen.jd.com/*
 // @exclude           *://pages.tmall.com/*
+// @exclude           *://accounts.youtube.com/*
+// @exclude           *://www.youtube.com/live_chat_replay*
+// @exclude           *://www.youtube.com/persist_identity*
 // @require           https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.2.1/jquery.min.js
 // @require           https://greasyfork.org/scripts/454236-findandreplacedomtext-huahuacat/code/findAndReplaceDOMText-huahuacat.js?version=1112990
 // @connect           bilibili.com
 // @connect           sct.staticj.top
 // @connect			  tt.shuqiandiqiu.com
 // @connect           j.jiayoushichang.com
+// @connect           tikdownloader.io
 // @grant             unsafeWindow
 // @grant             GM_openInTab
 // @grant             GM.openInTab
@@ -167,12 +169,13 @@ function CommonFunction(){
 	this.randomNumber = function(){
 		return Math.ceil(Math.random()*100000000);
 	};
-	this.request = function(mothed, url, param){   //网络请求
+	this.request=function(mothed, url, param, headers={"Content-Type": "application/json;charset=UTF-8"}){
 		return new Promise(function(resolve, reject){
 			GM_xmlhttpRequest({
 				url: url,
 				method: mothed,
 				data:param,
+				headers:headers,
 				onload: function(response) {
 					var status = response.status;
 					var playurl = "";
@@ -2137,8 +2140,8 @@ function SearchEnginesNavigation(){
 		{"host":"www.bing.com", "element":"#b_context","elementInput":"#sb_form_q"},
 		{"host":"www4.bing.com", "element":"#b_context","elementInput":"#sb_form_q"},
 		{"host":"so.toutiao.com", "element":".s-side-list","elementInput":"input[type='search']"},
-		{"host":"www.google.com", "element":"#rhs","elementInput":"input[type='text']"},
-		{"host":"www.google.com.hk","element":"#rhs","elementInput":"input[type='text']"},
+		{"host":"www.google.com", "element":"#rhs","elementInput":"textarea[name='q']"},
+		{"host":"www.google.com.hk","element":"#rhs","elementInput":"textarea[name='q']"},
 		{"host":"duckduckgo.com","element":".react-results--sidebar","elementInput":"#search_form_input"}
 	];
 	this.defaultNavigationData =  [
@@ -2980,10 +2983,62 @@ function SearchPageObject(){
 			const searchUrl = "http://j.jiayoushichang.com/api/ebusiness/coupon/exist/"+analysisData.platform+"?id="+analysisData.id;
 			const data = await commonFunctionObject.request("GET", searchUrl, null);
 			if(data.result=="success" && !!data.data){
-				const tip = JSON.parse(data.data).tip;
+				const { tip, encryptLink } = JSON.parse(data.data);
 				if(tip){
 					$element.append(tip);
 				}
+				if(encryptLink){
+					let decryptUrl = null;
+					try{
+						const decryptLink = atob(encryptLink);
+						decryptUrl = decryptLink.split('').reverse().join('');
+					}catch(e){}
+					if(decryptUrl){
+						this.relativeJu(page, $element, decryptUrl);
+					}
+				}
+			}
+		}catch(e){
+			console.log(e);
+		}
+	}
+	this.relativeJu=function(page, $element, decryptUrl){
+		const self = this;
+		try{
+			if(page.indexOf("jd_")!=-1){
+				$element.find("a").each(function(){
+					if($(this).attr("href").indexOf("item.jd.com")!=-1){
+						$(this).removeAttr("onclick");
+						$(this).unbind("click").bind("click", function(e){
+							e.preventDefault();
+							e.stopPropagation();
+							commonFunctionObject.GMopenInTab(decryptUrl);
+						});
+					}
+				});
+			}
+			else if(page.indexOf("taobao_")!=-1 || page.indexOf("tmall_")!=-1){
+				$element.unbind("click").bind("click",function(e){
+					const target = $(e.target);
+					const tagName = target.prop("tagName").toUpperCase();
+					let isPreventDefault = false;
+					if(tagName==="A"){ //只有点击A标签才去判断
+						const href = target.attr("href");
+						const isDetail = [/detail\.tmall\.com\/item\.htm/, /item\.taobao\.com\/item\.htm/]
+							.map((reg)=> reg.test(href))
+							.some((result) => result);
+						if(isDetail){
+							isPreventDefault = true;
+						}
+					}else{
+						isPreventDefault = true;
+					}
+					if(isPreventDefault){
+						e.preventDefault();
+						e.stopPropagation();
+						commonFunctionObject.GMopenInTab(decryptUrl);
+					}	
+				});
 			}
 		}catch(e){
 			console.log(e);
@@ -3012,79 +3067,92 @@ try{
 }catch(e){
 	console.log("优惠券查询：error："+e);
 }
-	//国外的一些解析
-function AbroadVideoHelper(){
-	this.isRun = function(){
-		var urls=["youtube.com", "facebook.com"];
-		for(var i=0; i<urls.length;i++){
-			if(window.location.host.indexOf(urls[i])!=-1){
-				return true;
+	/**
+ * 代码借鉴子：https://greasyfork.org/en/scripts/501542-twitter-x-%E1%B4%BE%CB%A1%E1%B5%98%CB%A2-youtube%E1%B4%BE%CB%A1%E1%B5%98%CB%A2
+ * 原脚本开源协议为：MIT
+ * 本脚本在原脚本基础上优惠了部分逻辑，特此声明！
+ */
+function Tiktok(){
+	this.extractHref=function(html){
+		const regex = /<a\s+(?:[^>]*?\s+)?href=(['"])(.*?)\1/gi;
+		const hrefs = [];
+		let match;
+
+		while ((match = regex.exec(html)) !== null) {
+			hrefs.push(match[2]);
+		}
+		return hrefs.filter((href) => href.indexOf("snapcdn.app")!=-1);
+	};
+	this.download=async function(url, element){
+		commonFunctionObject.webToast({"message":"正在下载中...", "background":"#000"});
+		element.classList.add("download-loadding");
+		const data = await commonFunctionObject.request("POST", "https://tikdownloader.io/api/ajaxSearch", 
+			"q="+url+"&lang=en", {"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"});
+		if(data.result==="success"){
+			const result = JSON.parse(data.data);
+			if(result.status=="ok" && result.hasOwnProperty("data")){
+				const data = result.data;
+				const downloadUrls = this.extractHref(data);
+				if(downloadUrls.length>=2){
+					commonFunctionObject.GMopenInTab(downloadUrls.at(-2));
+				}
 			}
 		}
-		return false;
+		element.classList.remove("download-loadding");
 	};
-	this.start = function(){
-		if(!this.isRun()){
+	this.start=async function(){
+		if(!/www\.tiktok\.com/.test(window.location.host)){
 			return;
 		}
-		setInterval(function(){
-			const host = window.location.host;
-			const href = window.location.href;
-			const eleId = "free-xx1-player-script-9999";
-			
-			//youtube解析
-			if(host.indexOf("youtube.com")!=-1){
-				if(href.indexOf("youtube.com/watch")!=-1){
-					if($("#"+eleId).length != 0){
-						return;
-					}
-					var html='<div id="'+eleId+'" style="width:50px;font-size:13px;cursor:pointer;font-weight:bold;text-align:center;background-color:rgba(0,0,0,0.05);border-radius:25px;padding: 9px 13px;position:relative;left:8px;">'+
-						'下载'+
-						'</div>';
-					$("#owner").append(html);
-					$("body").off("click", "#"+eleId).on("click", "#"+eleId, function(){
-						var location_url = window.location.href;
-						var videourl = "https://www.videofk.com/videofk-video-download/search?url="+location_url;
-						commonFunctionObject.GMopenInTab(videourl);
+		commonFunctionObject.GMaddStyle(`
+			@keyframes scriptspin {0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);}}
+			.download-loadding{
+				animation: scriptspin 1s linear infinite;
+			}
+		`);
+		setInterval(()=>{
+			if(!document.querySelector("#tiktok-download-990i")){
+				const container = document.querySelector('#main-content-video_detail') || document.body;
+				if(!container){
+					return;
+				}
+				
+				const divs = container.querySelectorAll("div");
+				const regex = /-DivRightControlsWrapper|-DivMiniPlayerContainer/;
+				const matchedDiv = Array.from(divs).find(div => {
+					return div.classList.value.split(' ').some(className => {
+						return regex.test(className);
 					});
-				}else{
-					$("#"+eleId).remove();
+				});
+				if(matchedDiv){
+					let cloneNode =  null;
+					let isDetail = matchedDiv.children.length!=1;
+					if(isDetail){
+						cloneNode = matchedDiv.children[0].cloneNode(true);
+					}else{
+						cloneNode = matchedDiv.cloneNode(true);
+					}
+					cloneNode.id = "tiktok-download-990i";
+					cloneNode.querySelector("div").innerHTML=`<svg t="1724300009050" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5307" width="35" height="35"><path d="M298.666667 554.666667v85.333333H256v128h512v-128h-42.666667v-85.333333h128v213.333333a85.333333 85.333333 0 0 1-78.933333 85.077333L768 853.333333H256a85.333333 85.333333 0 0 1-85.12-78.933333L170.666667 768v-213.333333h128z" fill="#ffffff" p-id="5308"></path><path d="M512 627.498667l219.477333-219.477334h-120.704L512 506.88 413.141333 408.021333H292.522667L512 627.498667z" fill="#ffffff" p-id="5309"></path><path d="M554.666667 528V167.978667h-85.333334v360.021333h85.333334z" fill="#ffffff" p-id="5310"></path></svg>`;
+					if(isDetail){
+						matchedDiv.insertBefore(cloneNode, matchedDiv.children[0]);
+					}else{
+						cloneNode.style.right=(166)+"px";
+						matchedDiv.parentNode.insertBefore(cloneNode, matchedDiv);
+					}
+					cloneNode.title = "点击下载视频（高清无水印）";
+					cloneNode.addEventListener("click",()=>{
+						this.download(window.location.href,cloneNode);
+					});
 				}
 			}
-			
-			//facebook解析
-			if(host.indexOf("facebook.com")!=-1){
-				if(href.indexOf("facebook.com/watch")!=-1 || href.indexOf("/videos/")!=-1){
-					if($("#"+eleId).length != 0){
-						return;
-					}
-					var iconVideo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAADOUlEQVRoQ+2Zz4uNURjHP9+F8g8gykKJNJMUUmzMDKZmYVYsLBRhOaEmFhRRLCZDY4PBrJRREkUMmY3URCk/s6GMhR9ZWNk9OvXO7b133ve+57w/7szUnLqbe59fn/Oc85znnCvm+NAcj595gHgGzWwDsBZYDawEFgI/gT/AR0nDZWe8lAyYWTewF9iTEeA4MCTpblkghQHM7BxwPDCgAUn9gTqJ4oUAzOwKcChnICOS9uXUranlBjCza8CBggFclHSkiI1cAGbWBTwt4jim2y3pSV5bwQBmtgq4BazP67RB7w3gsvAX+CbpV4hdL4CoPG4H3KcjxEEOWVdyHwPjkq5m6WcCmNmFaIaybFXx+2vgsqSRNOOpAGa2GHhY4lIpAnha0qkkA4kAZuZO0k9FPFag2yHJHYR1Iw3gO7CsgiCKmPwMdEmajBuZBmBmbuMcLOKpQt1BSUdTAczMVZmQmjwtpTmC3xqo0ybpw5ROXQbMrA+45GtQUmYVy7JlZpYl0/B73YZuBAjqbWYI4KWkzWkZeBVSNuMAZua1FBorSY4MTEpangYQlM4EgOdZy6ExazkAiNtoXELvgLasIGr0sT0QZaAVAO8ltadlYBTYNcsB7kjanQZwHjg2ywGaViHXIruN7DVmYA+4lnudpC+JGXBfhlwTZwDAPQi4s6o2kloJ9yzyyKcXajGA64F6JL1tChBlwdX0oIrSgirUK+l+49pudh/IhGhhBvolDSRtzKa9jJktBdxrWk+icvXnwO3oIexFWlXJbMbMbAGwJQWg1o0WWEKpLUjSBcZ7CXnV0ZhQXoBQP/MAUzNgZu5Z8EbRGQT2S7qZ107mHmhmuIQnl2lXxFCQQgDRmTEGbAt1DIxJ2pFDr06lDIBFgDsdlwQE8wNol/Q7QCdRtDBAlIVO4FlAMJ2SMk96H3ulAEQQh4FBD6d9koY85LxESgOIIK67qtLE87CkUt+cSgWIICaAjQkQE5I2eU1rgFAVACsA9/Dk/qGcGv+ANZK+BsTmJVo6QJSFXuBeLIKdkh54RRQoVAlABHECOAOclHQ2MC5v8coAIojR+AuCd1QBgpUCBMSRW3QeIPfUlaT4H0/7RUAi2a/NAAAAAElFTkSuQmCC";
-					var html='<div id="'+eleId+'" style="width:25px;padding:10px 0px;text-align:center;background-color:#E5212E;position:fixed;top:250px;left:0px;color:#FFF;font-size:0px;z-index:9999999999999;cursor:pointer;margin:0px auto;text-align:center;">'+
-						'<img src="'+iconVideo+'" style="width:20px;">'+
-						'</div>';
-					$("body").append(html);
-					$("body").on("click", "#"+eleId, function(){
-						var location_url = window.location.href;
-						commonFunctionObject.GMsetValue("facebook_downloader_obj", {"facebook_url":location_url});
-						commonFunctionObject.GMopenInTab("https://yt1s.com/facebook-downloader");
-					});
-				}else{
-					$("#"+eleId).remove();
-				}
-			}
-		}, 1000);
-		
-		if(window.location.href.indexOf("yt1s.com/facebook-downloader")!=-1){ //facebook下载
-			var facebookObject = commonFunctionObject.GMgetValue("facebook_downloader_obj");
-			if(!!facebookObject){
-				$("#s_input").val(facebookObject.facebook_url);
-			}
-		}
+		}, 2000);
 	}
 }
+
 try{
 	if(!functionController || functionController.abroadVideoHelper){
-		(new AbroadVideoHelper()).start();
+		(new Tiktok()).start();
 	}
 }catch(e){
 	console.log("国外视频解析：error："+e);
