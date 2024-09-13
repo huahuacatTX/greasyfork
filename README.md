@@ -2,7 +2,7 @@
 其一是和greasyfork上的版本做区分，其二是PRO版本在功能上会更加激进，作为个人开发者时间有限，脚本bug会优先在此处修复。
 
 ## 【PRO版】安装
-<a href="https://huahuacattx.github.io/huahuacat.user.js?t=20240719"><img class="js-lazy-loaded" decoding="async" data-canonical-src="https://img.shields.io/badge/点我安装最新版V2.2.1-005200" height="35px" src="https://img.shields.io/badge/点我安装最新版V2.2.1-005200" loading="lazy" data-testid="js-lazy-loaded-content"></a>
+<a href="https://huahuacattx.github.io/huahuacat.user.js?t=20240913"><img class="js-lazy-loaded" decoding="async" data-canonical-src="https://img.shields.io/badge/点我安装最新版V2.2.2-005200" height="35px" src="https://img.shields.io/badge/点我安装最新版V2.2.2-005200" loading="lazy" data-testid="js-lazy-loaded-content"></a>
 
 *【PRO版】和【greasyfork版】择一安装即可*
 
