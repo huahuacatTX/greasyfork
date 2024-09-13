@@ -3,7 +3,7 @@
 // @name:zh           【PRO版本】B站哔哩哔哩使用增强，全网VIP视频免费破解去广告，知乎使用增强，短视频无水印下载，油管、Facebook等国外视频解析下载等😈
 // @name:zh-TW		  【PRO版本】B站嗶哩嗶哩使用增強，全網VIP視頻免費破解去廣告，知乎使用增強，短視頻無水印下載，油管、Facebook等國外視頻解析下載等😈
 // @namespace         bilibili_namespace_20230625
-// @version           2.2.1
+// @version           2.2.2
 // @description       功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook、Tiktok等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
 // @description:zh    功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook、Tiktok等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
 // @description:zh-TW 功能可選擇性開啟：1、B站使用增強：支援視頻下載(👉支援多P批量快速下載👈)、瀏覽記錄提示、一鍵三連、自動簽到、描述文本網址轉連結等；2、全網VIP視頻解析：愛奇藝、騰訊、優酷、bilibili等視頻免費解析(支援自定義解析介面)；3、知乎使用助手：內容種類標識、問答顯示優化、視頻下載等；4、短視頻去水印下載：支援知乎、抖音、快手等；5、油管、Facebook、Tiktok等國外視頻解析下載；🔥6、搜索引擎功能增強,百度添加網址顯示，google結果新標籤頁開啟燈,導航可自定義網址【指令碼或直譯式程式長期維護更新，完全免費，無廣告，僅限學習交流！！】
@@ -445,6 +445,14 @@ function CommonFunction(){
 	};
 	this.getElementObject = function(selector, target=document.body, allowEmpty = true, delay=10, maxDelay=10 * 1000){
 		return new Promise((resolve,reject) =>{
+			if (selector.toUpperCase() === "BODY") {
+				resolve(document.body);
+				return;
+			}
+			if (selector.toUpperCase() === "HTML") {
+				resolve(document.html);
+				return;
+			}
 			let totalDelay = 0;
 			
 			let element = target.querySelector(selector);
@@ -2619,754 +2627,10 @@ const recordBrowsingHistoryKey = "record_browsing_history_mark_key";
 const browsedHtml= `
 	<div style="position:absolute;white-space: nowrap; top:7px;padding:2px 5px;font-size:12px;background-color:rgba(0,0,0);color:#FFF;z-index:9999999999;border-radius:20px;right:10px;"><b>已浏览</b></div>
 `
-function HistoryObject(){
-	this.redirectUrl="https://tt.shuqiandiqiu.com/api/go/to?e=";
-	this.storageKeys={
-		goodsHistory:"goooods_history_key",
-		offset:"goooods_wrapper_key",
-		maximumRecordsKey:"goooods_max_records_key"
-	};
-	this.defaultValue={
-		historyStorage:{"jd":[], "taobao":[], "vpinhui":[]},
-		offsetWrapper:{left:15, bottom:15},
-		records:{min:10, max:500, default:100}
-	};
-	this.push=function(platform, obj){
-		const storageObj = GM_getValue(this.storageKeys.goodsHistory, this.defaultValue.historyStorage);
-		const maximumRecords = GM_getValue(this.storageKeys.maximumRecordsKey, this.defaultValue.records.default);
-		const histories = storageObj[platform] ?? [];
-					
-		if(histories.length>=maximumRecords){
-			histories.splice(0, parseInt(maximumRecords/5)); //removev forward 1/5
-		}
-		const newArr = histories.filter((item, index) => item.id != obj.id);
-		newArr.push(obj);
-		
-		storageObj[platform] = newArr;
-		GM_setValue(this.storageKeys.goodsHistory, storageObj);
-	};
-	this.get=function(platform, num=-1){
-		const storageObj = GM_getValue(this.storageKeys.goodsHistory, this.defaultValue.historyStorage);
-		const histories = storageObj[platform];
-		
-		if(num > 0){ // <0 is get all storage
-			const showHistories = [];
-			for(let i=histories.length-1; i>=0; i--){
-				if(showHistories.length>=num) break;
-				showHistories.push(histories[i]);
-			}
-			return showHistories;
-		}	
-		return histories;
-	};
-	this.remove=function(platform, id){
-		const storageObj = GM_getValue(this.storageKeys.goodsHistory, this.defaultValue.historyStorage);
-		const histories = storageObj[platform];
-		
-		let newArr = histories.filter((item, index) => item.id != id);
-		storageObj[platform] = newArr;
-		
-		GM_setValue(this.storageKeys.goodsHistory, storageObj);
-	};
-	this.removeAll=function(){
-		GM_setValue(this.storageKeys.goodsHistory, this.defaultValue.historyStorage);
-		
-		document.querySelector(".peter99032j-xyz-panel-aside-body .goods_____review").innerHTML='';
-		document.querySelector(".peter99032j-xyz-panel-aside-main .panel-aside-main_____content").innerHTML='';
-	};
-	this.removeAllConfirm=function(){
-		if(confirm('此弹窗来自脚本-[🔥]!!网购小助手,不花冤枉钱\n是否要移除所有的浏览记录？移除后将不可恢复...')){
-			this.removeAll(); //box展示
-			commonFunctionObject.GMsetValue(recordBrowsingHistoryKey,[]); //已浏览标识
-		}
-	};
-	this.registerMenuCommand=function(){
-		GM_registerMenuCommand("浏览记录设置【点击或shift+c均可可唤起】", ()=> {
-			this.showSettingDialog();
-		});
-		const listener = new window.keypress.Listener();
-		listener.simple_combo("shift c", ()=>{
-			this.showSettingDialog();
-		});
-	};
-	this.getGoodsByDateGroup=function(platform){
-		const histories = this.get(platform).reverse();
-		const group = [];
-		
-		const today = new Date();
-		const yesterday = new Date(today);
-		const format = "dd/MM";
-		yesterday.setDate(today.getDate() - 1);
-		
-		const todayStr = this.dateFormat(today, format);
-		const yesterdayStr = this.dateFormat(yesterday, format);
-		const showDateFormat = (todayStr, yesterdayStr, current) =>{
-			return  current === todayStr ? "今天" : (current === yesterdayStr ? "昨天" : current);
-		};
-		
-		let items = [], cacheDateStr=null, currentDateStr = null;
-		for(let i=0; i<histories.length; i++){
-			today.setTime(histories[i].date);
-			currentDateStr = this.dateFormat(today, format);
-			if(!!cacheDateStr){
-				if(cacheDateStr != currentDateStr){
-					group.push({
-						"str":showDateFormat(todayStr, yesterdayStr, cacheDateStr),
-						"items":items
-					});
-					items = [];
-					cacheDateStr = currentDateStr;
-				}
-			}else{
-				cacheDateStr = currentDateStr;
-			}
-			items.push(histories[i]);
-		}
-		
-		if(items.length!=0){
-			group.push({
-				"str":showDateFormat(todayStr, yesterdayStr, cacheDateStr),
-				"items":items
-			});
-		}
-		return group;
-	};
-	this.dateFormat=function(date,format){
-		var showDate = {
-			"M+": date.getMonth() + 1,
-			"d+": date.getDate(),
-			"h+": date.getHours(),
-			"m+": date.getMinutes(),
-			"s+": date.getSeconds(),
-			"q+": Math.floor((date.getMonth() + 3) / 3),
-			"S+": date.getMilliseconds()
-		};
-		if (/(y+)/i.test(format)) {
-			format = format.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
-		}
-		for (var k in showDate) {
-			if (new RegExp("(" + k + ")").test(format)) {
-				format = format.replace(RegExp.$1, RegExp.$1.length == 1
-					   ? showDate[k] : ("00" + showDate[k]).substr(("" + showDate[k]).length));
-			}
-		}
-		return format;
-	};
-	this.showSettingDialog=function(){
-		const outerId = "dialog_x_" + Math.ceil(Math.random()*100000000);
-		const self = this;
-		const {min,max} = this.defaultValue.records;
-		const maximumRecords = GM_getValue(this.storageKeys.maximumRecordsKey, this.defaultValue.records.default);
-		
-		const styleSheet = `
-			#`+outerId+`{
-				padding:15px;
-			}
-			#`+outerId+` .d_____piece{
-				margin-bottom:15px;
-				font-size:15px;
-			}
-			#`+outerId+` .d_____input{
-				padding: 5px 10px !important;
-				background-color: #fafafa !important;
-				color: #000 !important;
-				border: 1px solid #ccc !important;
-				font-size: 14px !important;
-				border-radius: 4px !important;
-				width: 80px !important;
-				text-align: center !important;
-			}
-			#`+outerId+` .d_____btn{
-				padding: 4px 15px !important;
-				background-color: #edf2fa !important;
-				color: #000 !important;
-				border-radius: 4px!important;
-				font-size: 14px!important;
-				border:none!important;
-			}
-			#`+outerId+` .d_____btn:hover{
-				background-color: #cdd1da !important;
-			}
-		`;
-		
-		var tips = "最大浏览记录数(最小: {min}，最大:{max}，改变的值会自动保存)：";
-		tips = tips.replace("{min}", min);
-		tips = tips.replace("{max}", max);
-		
-		const content = `
-			<div id="`+outerId+`">
-				<div class="d_____piece">
-					`+tips+`<input class="d_____input" number="number" min="`+min+`" max="`+max+`" step="1"  value="`+maximumRecords+`" name="maximum-records"/>
-				</div>
-				<div class="d_____piece">
-					<p>清除所有浏览浏览记录。注意：清除后浏览记录不可恢复，请谨慎操作。</p>
-					<button class="d_____btn" name="clear">清除</button>
-				</div>
-			</div>
-		`;
-		dialog.showMake({
-			title: "设置",
-			content: content,
-			styleSheet: styleSheet,
-			onContentReady:function($that){
-				$that.dialogContent.querySelector("button[name='clear']").addEventListener("click",function(){
-					self.removeAllConfirm();
-				});
-				$that.dialogContent.querySelector("input[name='maximum-records']").onchange=function(e){
-					const value = this.value;
-					if(value>=min && value<=max){
-						GM_setValue(self.storageKeys.maximumRecordsKey, value);
-					}
-				}
-			}
-		});
-	};
-	this.showOrHideHistoryBox=function(platform){
-		const self = this;
-		const group = this.getGoodsByDateGroup(platform);
-		const contentElement = document.querySelector(".peter99032j-xyz-panel-aside-main .panel-aside-main_____content");
-		contentElement.innerHTML = "";
-		
-		let historiesBoxHtml = "", jumpUrl="", imgUrl="";
-		for(let i=0; i<group.length; i++){
-			historiesBoxHtml += `<div class="panel-aside-main_____item">`;
-			historiesBoxHtml += `<div class="item_____title"> —— `+group[i].str+` —— </div>`;
-			historiesBoxHtml += `<div class="item_____container">`;
-			for(let j=0; j<group[i].items.length; j++){
-				jumpUrl = commonFunctionObject.encryptStr(this.redirectUrl+encodeURIComponent(group[i].items[j].url));
-				imgUrl = group[i].items[j].pic;
-				historiesBoxHtml += `
-					<div class="histories-box-review_item">
-						<a title="`+group[i].items[j].title+`" jump-tag="true" href="javascript:void(0);" jump-url="`+jumpUrl+`" target="_blank">
-							<div class="review___shadow">
-								<div class="delete_____btn" data-id="`+group[i].items[j].id+`">×</div>
-							</div>
-							<div class="review___img"><img src="`+imgUrl+`" /></div>
-							<div class="review___text">￥`+group[i].items[j].price+`</div>
-						</a>
-					</div>
-				`;
-			}
-			historiesBoxHtml += `</div>`;
-			historiesBoxHtml += `</div>`;
-		}
-		contentElement.innerHTML = historiesBoxHtml;
-		
-		document.querySelectorAll(".peter99032j-xyz-panel-aside-main .delete_____btn").forEach((ele)=>{
-			ele.addEventListener("click",function(e){
-				e.stopPropagation();
-				e.preventDefault();
-				const id = this.getAttribute("data-id");
-				this.parentNode.parentNode.parentNode.remove();
-				self.remove(platform, id);
-			});
-		});
-		
-		const items = document.querySelectorAll(".peter99032j-xyz-panel-aside-main .histories-box-review_item > a");
-		items.forEach((ele)=>{
-			ele.addEventListener('mouseover', function() {
-				this.querySelector(".review___shadow").style.display="block";
-			});
-			ele.addEventListener('mouseout', function() {
-				this.querySelector(".review___shadow").style.display="none";
-			});
-		});
-		
-		document.querySelectorAll(".peter99032j-xyz-panel-aside-main a[jump-tag='true']").forEach((ele)=>{
-			ele.addEventListener("click",function(e){
-				e.stopPropagation();
-				e.preventDefault();
-				const href = this.getAttribute("jump-url");
-				commonFunctionObject.GMopenInTab(commonFunctionObject.decryptStr(href));
-			});
-		});
-	};
-	this.createHistoryBox=function(platform){
-		const wrapperOffset = GM_getValue(this.storageKeys.offset, this.defaultValue.offsetWrapper);
-		let css = `
-			.peter99032j-xyz-panel-wrapper{
-				position: fixed;
-				bottom: `+wrapperOffset.bottom+`px;
-				left: `+wrapperOffset.left+`px;
-				z-index: 999999999;
-				box-sizing: border-box;
-			}
-			
-			.peter99032j-xyz-panel-wrapper svg.icon-svg path{
-				fill: #bfbfbf;
-			}
-			
-			.peter99032j-xyz-panel-wrapper svg.icon-svg:hover path{
-				fill: #6a7a9b;
-			}
-
-			/*** 历史记录大box ***/
-			.peter99032j-xyz-panel-wrapper >.peter99032j-xyz-panel-aside-main{
-				width: 400px;
-				height: 400px;
-				position: absolute;
-				left: 0px;
-				bottom: 70px;
-				border-radius: 5px;
-				border: 1px solid #ebebeb;
-				background-color: #fafafa;
-				overflow-y: auto;
-				overflow-x: hidden;
-				background-color:#fafafa;
-				display:none;
-				-moz-box-shadow:2px 2px 5px #b6bdc5;
-				-webkit-box-shadow:2px 2px 5px #b6bdc5; 
-				box-shadow:2px 2px 5px #b6bdc5;
-			}
-			.peter99032j-xyz-panel-wrapper >.peter99032j-xyz-panel-aside-main >.panel-aside-main_____inner{
-				display: flex;
-				flex-direction: column;
-				width: 100%;
-				height: 100%;
-			}
-			
-			.peter99032j-xyz-panel-aside-main .panel-aside-main_____header{
-				display: flex;
-				align-items: center;
-				flex-direction: row;
-				height:40px;
-				background: #dedede;
-			}
-			.peter99032j-xyz-panel-aside-main .panel-aside-main_____header >.header_____title{
-				align-items: center;
-				display: flex;
-				flex: 1;
-				margin-left: 15px;
-				font-size: 15px;
-				font-weight: bold;
-			}
-			.peter99032j-xyz-panel-aside-main .panel-aside-main_____header >.header_____title >img{
-				display:block;
-				margin-right:5px;
-				width:25px;
-				height:25px;
-			}
-			.peter99032j-xyz-panel-aside-main .panel-aside-main_____header >.header_____close,
-			.peter99032j-xyz-panel-aside-main .panel-aside-main_____header >.header_____setting{
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				cursor:pointer;
-				width:35px;
-			}
-			
-			.peter99032j-xyz-panel-aside-main .panel-aside-main_____content{
-				flex: 1;
-				overflow: auto;
-			}
-							
-			.peter99032j-xyz-panel-aside-main .panel-aside-main_____item{
-				padding: 5px;
-				margin:5px 0px;
-			}
-			.peter99032j-xyz-panel-aside-main .panel-aside-main_____item .item_____title{
-				font-size: 13px;
-				font-weight: 500;
-				text-align: center;
-				color: #b6b6b6;
-				padding: 5px 0px;
-			}
-			.peter99032j-xyz-panel-aside-main .panel-aside-main_____item .item_____container{
-				display: flex;
-				flex-flow: wrap;
-				flex-direction: row;
-				justify-content: flex-start;
-			}
-			
-			/**** 历史记录展示 ****/
-			.peter99032j-xyz-panel-aside-main .histories-box-review_item{
-				width:33.3333%;
-				margin: 5px 0px;
-				overflow: hidden;
-			}
-			.peter99032j-xyz-panel-aside-main .histories-box-review_item >a{
-				display: block !important;
-				position: relative !important;
-				margin: 0px auto !important;
-				background-color: #fff !important;
-				width: 110px !important;
-				border-radius: 5px !important;
-				border: 1px solid #ccc !important;
-				box-sizing: content-box !important;
-			}
-			.peter99032j-xyz-panel-aside-main .histories-box-review_item > a >.review___shadow{
-				position:absolute;
-				left:0px;
-				right:0px;
-				top:0px;
-				bottom:0px;
-				z-index:99;
-				text-align: center;
-				border:2px solid red;
-				border-radius: 5px;
-				display:none;
-			}
-			.peter99032j-xyz-panel-aside-main .histories-box-review_item > a >.review___shadow .delete_____btn{
-				position: absolute;
-				top: 0px;
-				right: 0px;
-				width: 15px;
-				height: 15px;
-				text-align: center;
-				line-height: 10px;
-				background-color:red;
-				color:#FFF;
-				font-size:13px;
-				border-radius:3px;
-			}
-			.peter99032j-xyz-panel-aside-main .histories-box-review_item > a >.review___img{
-				width:110px;
-				height: 110px;
-				border-radius: 5px 5px 0px 0px;
-				overflow: hidden;
-			}
-			.peter99032j-xyz-panel-aside-main .histories-box-review_item > a >.review___img >img{
-				width:100%;
-				display:block;
-			}
-			.peter99032j-xyz-panel-aside-main .histories-box-review_item > a >.review___text{
-				text-align: center!important;
-				font-size: 13px !important;
-				color: #000 !important;
-				text-decoration: underline !important;
-				padding: 5px!important;
-				white-space: nowrap!important;
-				overflow: hidden!important;
-				text-overflow: ellipsis!important;
-			}
-			
-			/*** 横向小卡片 ***/
-			.peter99032j-xyz-panel-wrapper >.peter99032j-xyz-panel-aside-body{
-				display: flex;
-				border-radius:5px;
-				overflow: hidden;
-				background-color: #fafafa;
-				-moz-box-shadow:2px 2px 5px #b6bdc5; 
-				-webkit-box-shadow:2px 2px 5px #b6bdc5; 
-				box-shadow:2px 2px 5px #b6bdc5;
-				height:60px;
-			}
-			.peter99032j-xyz-panel-wrapper >.peter99032j-xyz-panel-aside-body >div{
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
-			.peter99032j-xyz-panel-aside-body .goods_____expand{
-				cursor: pointer;
-				width: 20px !important;
-			}
-			
-			.peter99032j-xyz-panel-aside-body .goods_____expand svg{
-				transition: transform 0.3s;
-			}
-							
-			/**** goods展示 ****/
-			.peter99032j-xyz-panel-aside-body .goods_____review{
-				flex-direction: row;
-				width:auto;
-				transition: all 0.5s ease-in-out;
-			}
-			.peter99032j-xyz-panel-aside-body .goods-review_____item{
-				width:45px;
-				height:45px;
-				line-height:45px;
-				margin:0px 5px;
-				position:relative;
-				border-radius: 4px;
-				overflow: hidden;
-				cursor:pointer;
-			}
-			.peter99032j-xyz-panel-aside-body .goods-review_____item >a{
-				display:block;
-				width: 100%;
-				height: 100%;
-			}
-			.peter99032j-xyz-panel-aside-body .goods-review_____item > a>.review___shadow{
-				position:absolute;
-				left:0px;
-				right:0px;
-				top:0px;
-				bottom:0px;
-				z-index:99;
-				text-align: center;
-				background-color:rgb(61 155 164 / 20%);
-				display:none;
-			}
-			.peter99032j-xyz-panel-aside-body .goods-review_____item > a>.review___shadow img{
-				width:15px;
-				display:inline;
-			}
-			.peter99032j-xyz-panel-aside-body .goods-review_____item img{
-				width:100%;
-				display:block;
-			}
-			
-			/** 展开历史记录BOX **/
-			.peter99032j-xyz-panel-aside-body .history-box_____expand{
-				flex-direction: column;
-				text-align: center;
-				margin:0px 10px;
-				cursor: pointer;
-			}
-			.peter99032j-xyz-panel-aside-body .history-box_____expand img{
-				width:26px;
-				height:26px;
-				display:block;
-			}
-			.peter99032j-xyz-panel-aside-body .history-box_____expand label{
-				font-size:12px;
-				font-weight: bold;
-			}
-			
-			.peter99032j-xyz-panel-aside-body .wrapper_____drag-handle{
-				width: 20px !important;
-				cursor: grab;
-				box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 3px -2px, rgba(0, 0, 0, 0.14) 0px 3px 4px 0px, rgba(0, 0, 0, 0.12) 0px 1px 8px 0px;
-			}
-		`;
-		
-		const histories = this.get(platform, 5);
-		const historyBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAA6tJREFUeF7tm0tu1EAQhtsIoZyFQwSyYT0LFhwG8RKHYcFi1mwIHIKzRAgxUVku0y73o17t8QNLUZRMp1311V/VFbu7Cwe/uoP7H0wALqfwcg0Au3O419ohAjA4/D6EdTiecBpA/OjO4QMXCAvA5dRPCI5v6frIAVEFcDmF7yuOOCcgRRBZAIPcwfk9XFkIJQCXPXge+ZCEkASw0ZznxOuOrhgzADt2HgDdd+dwF5NKAVhE+n+f3452PPn1kxM9rzETFUwASAvfn9dvA3zB9ezTq5BzBJ3FsbHz1KunXz/3v8LvXl5H80xUQAGI1vsYADgPEOILHIUxJYdrDgIIZxhFAKI1//e7b6NzMQBwGD7zvJxBjGlAFWACAEaWIg6QME1ouqBK4HtOMSmVKSFnAYgKYKyAnCHoKMCRFLs4vVJ1wpgWywDwkG0OhHHutgAcpToGPwXCAKE9gFi2AMQo2X46RwhtAaTqQalPkBSyFATF3D4ASoWqQeHKpoMi5XwAoCyps3QZk64AHEVQ+EIV+AHgGNtqzMOXh8nUN29uuLdaBwCIYtwcca3HcbTjFKjg+gBi4w3LWd9yY8oJasH1ASgNn4lEqYL/APDJEP1nSPS/gDRn4/FeCoA5FXPtRwGpDpGxGuwLAK0DzQBg82Gp2pgGCtlmM05RCOUKUNykWCIOD4C2shZVKYIjVwCEM249BV1XVgm0ldVCWKwGxAZrjY1ppB6eaualampWBOO81RiakoLHQ46rABD03dV+yfqQQ1FQdTVAUWyqzuMACwRFaq4PQKqj46SZ8sGIDoCy72argELgpJnyoYgegJK4CAK+Hao9STb0EnoAtB+AnxnLjggAd7Ay+jC9DYCBPNe36jijDTYAtBbAz5yCVfWKOYA6z6kVZGo7AK8ujunzOCx1X0VbbgeQWrZaK8GjaxxI+gBYEoKj8/YiSGXb6BV2f5vcNhtjzfFTQKmVxc80xpb2F2nm4xZB0RYZqoTapih8C1TaTVbbIuP0ntFnj1CugkveGnNXAYeoj7fqzv/OSZj2CdaMt4JAxdRa4pod9PPFAOCNUdYleeNY7aYqAYTJpunUVllTHeAaQvcQSHaQce+RGhdHHz5PAYBzQHs5J0AZzLbMH2q7PI1+UgGIbAdHZWj0Z2cFigDgwx1BkB+ZiZQg2kFuKVAN/haO0YHz2XOF1VNjgxIAwouNnR7zOTYXR2U4UAGrxBphYJSLEZ81RQ1kt6kpWSmwKY+Exh4ewCNrZxJuJPAN9AAAAABJRU5ErkJggg==";	
-		
-		let goodsHtml = ``, jumpUrl = "";
-		histories.forEach((h)=>{
-			jumpUrl = commonFunctionObject.encryptStr(this.redirectUrl+encodeURIComponent(h.url));
-			goodsHtml += `
-				<div class="goods-review_____item">
-					<a title="`+h.title+`" jump-tag="true" jump-url="`+jumpUrl+`" target="_blank">
-						<div class="review___shadow">
-							<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAVlJREFUWEftlsGRgzAMRS26wBQTUtluKltSDKYLlJUHMY6xZMGFi7lkCObr6cuWAHfzBTfHdw2gOdAcOOXAPM+/fGwB4OGcG7f7iX4R8d113dT3fby3XCYACgwAPxZBBiKYYRh2YOldFUAKjIivNNNlWUZEJEB2ZI9HazUQEUALLgluIH95thpEESCEQCKHbADgyfXNACcAeNEzpVyT9/6Zwx0ApOD/QFFAypKEvfdR74x7XwCaOGevANIpiPXWNm1eji8ATZyzCyGgdhos63gN6eQAorhFmMugOcml3PtJmo3FukpPqO6TdCMfHLBuIKkMiUvFU5RnXwSgP6W9kG6gbQ0tpya0NxvFftsx5JJIVucWWkp4uhHVIMhKajy0jptPtLMwLy634kJm6fSrzqVa4OIpqKlSfdd1HbdRHOufTj9+3zIFLwHUAK88N30PXBG2vtMAmgPNgQ/i7v8h6Um2jAAAAABJRU5ErkJggg==" />
-						</div>
-						<img src="`+h.pic+`" />
-					</a>
-				</div>
-			`;
-		});
-		
-		let html = `
-			<div class="peter99032j-xyz-panel-wrapper">
-				<div class="peter99032j-xyz-panel-aside-main">
-					<div class="panel-aside-main_____inner">
-						<div class="panel-aside-main_____header">
-							<div class="header_____title">
-								<img src="`+historyBase64+`"/>
-								浏览记录
-							</div>
-							<div class="header_____setting">
-								<svg class="icon-svg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1770" width="30" height="30"><path d="M811.04 468.728a39.72 39.72 0 0 0-27.672-30.36l-10.2-2.28a100.872 100.872 0 0 1-68.856-120.24l3.12-9.552a41.592 41.592 0 0 0-11.424-40.368 281.64 281.64 0 0 0-36.816-24.336c-12.36-7.2-25.224-13.536-38.496-18.912a41.592 41.592 0 0 0-41.592 9.984l-7.08 7.488a100.248 100.248 0 0 1-69.264 27.456 100.464 100.464 0 0 1-68.64-27.672l-6.864-7.272a41.592 41.592 0 0 0-41.592-9.984 294.96 294.96 0 0 0-37.848 18.912c-12.696 7.152-24.792 15.288-36.192 24.336a41.592 41.592 0 0 0-10.824 40.368l2.904 9.552a101.088 101.088 0 0 1-10.8 74.064 96.72 96.72 0 0 1-57.408 45.552l-9.792 2.28a35.352 35.352 0 0 0-26.616 28.488c-1.872 14.352-2.64 28.8-2.28 43.272-0.408 14.736 0.36 29.472 2.28 44.088a39.936 39.936 0 0 0 25.8 31.2l9.552 2.304a99 99 0 0 1 57.624 46.992c12.984 22.392 16.848 48.912 10.8 74.064l-2.064 9.36a41.592 41.592 0 0 0 11.856 40.344c11.136 9.072 22.968 17.28 35.352 24.552 12.312 7.488 25.176 14.016 38.496 19.536 14.64 4.608 30.624 0.768 41.592-9.984l6.648-7.272a101.088 101.088 0 0 1 139.152 0l6.672 7.272a41.592 41.592 0 0 0 41.592 9.984 295.152 295.152 0 0 0 37.224-19.536 271.848 271.848 0 0 0 36.624-24.336c10.944-10.32 15.48-25.752 11.856-40.368l-2.928-9.768a100.872 100.872 0 0 1 69.48-120l9.576-2.304a39.72 39.72 0 0 0 27.648-30.36c1.68-14.376 2.232-28.824 1.68-43.272a291.192 291.192 0 0 0-2.304-43.272z m-307.44 190.944a147.672 147.672 0 1 1 0-295.344 147.672 147.672 0 0 1 0 295.344z" fill="#8a8a8a" p-id="1771"></path></svg>
-							</div>
-							<div class="header_____close">
-								<svg class="icon-svg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1609" width="30" height="30"><path d="M673.5644448 281.66826667L512 447.82933333 351.16373333 281.71377813a44.6464 44.6464 0 0 0-63.6700448-0.50062293 46.1027552 46.1027552 0 0 0-0.50062186 64.6712896L447.82933333 512l-160.83626666 165.84248853c-17.52177813 18.06791147-17.29422187 46.8764448 0.50062186 64.6712896a44.69191147 44.69191147 0 0 0 63.71555627-0.45511146L512 576.17066667l161.5644448 165.93351146a44.78293333 44.78293333 0 0 0 63.7155552 0.4096 45.96622187 45.96622187 0 0 0 0.45511147-64.62577813L576.17066667 512l161.5644448-166.16106667a46.01173333 46.01173333 0 0 0-0.45511147-64.62577813 44.73742187 44.73742187 0 0 0-63.7155552 0.45511147z" fill="#5D6E7F" p-id="1610"></path></svg>
-							</div>
-						</div>
-						<div class="panel-aside-main_____content"></div>
-					</div>
-				</div>
-				<div class="peter99032j-xyz-panel-aside-body">
-					<div class="wrapper_____drag-handle">
-						<svg focusable="false" class="icon-svg" viewBox="0 0 24 24" data-testid="DragIndicatorIcon"><path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2m-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2" fill="#bfbfbf"></path></svg>
-					</div>
-					<div class="history-box_____expand">
-						<img src="`+historyBase64+`"/>
-						<label>记录</label>
-					</div>
-					<div class="goods_____review">
-						`+goodsHtml+`
-					</div>
-					<div class="goods_____expand">
-						<svg t="1725284828401" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1456" width="20" height="20"><path d="M706.15040002 97.8944a46.08 46.08 0 0 1-10.8544 29.9008L380.31360002 502.784a13.312 13.312 0 0 0 0 18.432l3.6864 3.072L695.29600002 896.2048a46.4896 46.4896 0 0 1-71.0656 59.8016l-311.0912-370.68799999a105.8816 105.8816 0 0 1 0-146.63680002l311.0912-370.68799999a46.2848 46.2848 0 0 1 81.92 29.9008z" fill="#bfbfbf" p-id="1457"></path></svg>
-					</div>
-				</div>
-			</div>
-		`;
-		
-		GM_addStyle(css);
-		document.querySelector("body").insertAdjacentHTML('afterend', html);
-		this.addEventListener(platform);
-	};
-	this.addEventListener=function(platform){
-		const self = this;
-		const items = document.querySelectorAll(".goods_____review >.goods-review_____item >a");
-		items.forEach((ele)=>{
-			ele.addEventListener('mouseover', function() {
-				this.querySelector(".review___shadow").style.display="block";
-			});
-			ele.addEventListener('mouseout', function() {
-				this.querySelector(".review___shadow").style.display="none";
-			});
-		});
-					
-		//展开底部tool商品
-		const goodsExpandEle = document.querySelector(".peter99032j-xyz-panel-wrapper .goods_____expand");
-		if(goodsExpandEle){
-			goodsExpandEle.addEventListener("click",function(e){
-				const goodsReviewEle = this.previousElementSibling;
-				
-				const svgEle = this.querySelector("svg");
-				svgEle.style.transition = 'transform 0.3s';
-				
-				if(goodsReviewEle.style.width=="0px"){
-					goodsReviewEle.style.width = "auto";
-					svgEle.style.transform = 'rotate(0deg)';
-				}else{
-					goodsReviewEle.style.width = "0px";
-					svgEle.style.transform = 'rotate(180deg)';
-				}
-				e.stopPropagation();
-			});
-		}
-		
-		//历史记录大的box，关闭
-		const historyBoxExpandEles = [
-			document.querySelector(".peter99032j-xyz-panel-wrapper .history-box_____expand"),
-			document.querySelector(".peter99032j-xyz-panel-wrapper .header_____close")
-		];
-		const asideMainEle = document.querySelector(".peter99032j-xyz-panel-wrapper >.peter99032j-xyz-panel-aside-main");
-		if(asideMainEle){
-			historyBoxExpandEles.forEach((ele)=>{
-				if(ele){
-					ele.addEventListener("click", function(e){
-						if(!asideMainEle.style.display || asideMainEle.style.display==="none"){
-							self.showOrHideHistoryBox(platform);
-							asideMainEle.style.display="block";
-						}else{
-							asideMainEle.style.display="none";
-						}
-						e.stopPropagation();
-					});
-				}
-			});
-		}
-		
-		//点击历史记录弹框以外的区域，影藏历史记录大的box
-		document.body.addEventListener("click",function(e){
-			if(asideMainEle.style.display && asideMainEle.style.display!=="none"){
-				asideMainEle.style.display="none";
-			}
-		});
-		
-		//弹出设置弹窗
-		const headerSettingElement = document.querySelector(".peter99032j-xyz-panel-wrapper .header_____setting");
-		if(headerSettingElement){
-			headerSettingElement.addEventListener("click",()=>{
-				self.showSettingDialog();
-			});
-		}
-		
-		//绑定点击事件
-		document.querySelectorAll(".peter99032j-xyz-panel-aside-body a[jump-tag='true']").forEach((ele)=>{
-			ele.addEventListener("click",function(e){
-				e.stopPropagation();
-				e.preventDefault();
-				const href = this.getAttribute("jump-url");
-				commonFunctionObject.GMopenInTab(commonFunctionObject.decryptStr(href));
-			});
-		});
-		
-		// 添加右键移动
-		const draggable = document.querySelector(".peter99032j-xyz-panel-wrapper .wrapper_____drag-handle");
-		const wrapper = document.querySelector(".peter99032j-xyz-panel-wrapper");
-		
-		let offsetX, offsetY;
-		const padding = 10;
-		const {width, height} = wrapper.getBoundingClientRect();
-		const  offsetWrapper = Object.assign({}, this.defaultValue.offsetWrapper);
-		//移动操作
-		const move = (e)=>{
-			const {innerWidth, innerHeight } = window;
-			
-			let x = e.clientX - offsetX;
-			let y = innerHeight - (e.clientY - offsetY) - height;
-			
-			if(x < padding){
-				x = padding;
-			}else if(x > innerWidth/2){
-				x = innerWidth/2;
-			}
-			
-			if(y < padding){
-				y = padding;
-			}else if(y > innerHeight - height - padding){
-				y = innerHeight - height - padding;
-			}
-			
-			wrapper.style.left = x + 'px';
-			wrapper.style.bottom = y + 'px';
-			
-			offsetWrapper.bottom = y;
-			offsetWrapper.left = y;
-			GM_setValue(this.storageKeys.offset, offsetWrapper)
-		}
-		
-		if(draggable && wrapper){				
-			draggable.addEventListener('mousedown', function(e){
-				offsetX = e.clientX - wrapper.offsetLeft;
-				offsetY = e.clientY - wrapper.offsetTop-10;
-				
-				draggable.style.cursor="grabbing";
-				wrapper.style.userSelect="none";
-				
-				document.addEventListener('mousemove',move);
-			});
-			
-			document.addEventListener('mouseup', function(){
-				draggable.style.cursor="grab";
-				wrapper.style.userSelect="default";
-				document.removeEventListener("mousemove", move);
-			});
-		}
-	};
-	this.platform=function(){
-		const host = window.location.host;
-		const isForbidden = [
-			/^s\.click\.taobao\.com/,/^u\.jd\.com/,/^myseller\.taobao\.com/,
-			/^pro\.taobao\.com/,/^open\.taobao\.com/,/^jubao\.taobao\.com/,/^ishop\.taobao\.com/,
-			/^myseller\.taobao\.com/,/^trade\.taobao\.com/,/^sell\.taobao\.com/,/^fuwu\.taobao\.com/,
-			/^daxue\.taobao\.com/,/^healthcenter\.taobao\.com/,/^qn\.taobao\.com/,/^consumerservice\.taobao\.com/,/^helpcenter\.taobao\.com/,
-			/^market\.m\.taobao\.com/,/^jubao\.taobao\.com/,/^ipp\.taobao\.com/,
-			/^jr\.jd\.com/,/^diy\.jd\.com/,/^join\.jd\.com/,/^smart\.jd\.com/,/^baitiao\.jd\.com/,/^m\.jr\.jd\.com/,
-			/^trade\.jr\.jd\.com/,/^chongzhi\.jd\.com/,/^jiaofei\.jd\.com/,/^caipiao\.jd\.com/,/^jipiao\.jd\.com/,/^movie\.jd\.com/,
-			/^daojia\.jd\.com/,/^huishou\.jd\.com/,/^lai\.jd\.com/,/^mobile\.jd\.com/,/^b\.jd\.com/,/^fw\.jd\.com/,
-			/^lj\.jd\.com/,/^bxdl\.jd\.com/,/^about\.jd\.com/,
-			/^passport\.vip\.com/,/^jr\.vip\.com/,/^acs\.vip\.com/,/^help\.vip\.com/,/^h5rsc\.vip\.com/,/^rule\.vip\.com/
-		].map((reg)=>reg.test(host)).some((rs)=>rs==true);
-		if(isForbidden){
-			return;
-		}
-		const isVip = [/vip\.com/, /vipglobal\.hk/]
-			.map((reg)=>reg.test(host))
-			.some((rs)=>rs==true);
-		const isTaobao = [/taobao\.com/, /tmall\.com/, /tmall\.hk/, /liangxinyao\.com/]
-			.map((reg)=>reg.test(host))
-			.some((rs)=>rs==true);
-		const isJd = [/.jd\.com/, /jd\.hk/, /yiyaojd\.com/, /item\.jkcsjd\.com/]
-			.map((reg)=>reg.test(host))
-			.some((rs)=>rs==true);
-			
-		if(isTaobao) return "taobao";
-		if(isJd) return "jd";
-		if(isVip) return "vpinhui";
-		return null;
-	};
-	this.start=function(){
-		let platform = this.platform();
-		if(platform){
-			if(platform=="tmall") platform="taobao";
-			this.createHistoryBox(platform);
-			this.registerMenuCommand();
-		}
-	};
-}
-function QueryCoupon(historyObject){
+function QueryCoupon(){
 	this.platforms = ["detail.tmall.com", "item.taobao.com", "item.jd.com", "item.yiyaojd.com", "npcitem.jd.hk", 
 		"detail.tmall.hk", "detail.vip.com", "item.jkcsjd.com"];
 	this.createQrcodeIsResult = true;
-	this.historyObject = historyObject;
 	this.isRun=function(){
 		for(var i=0; i<this.platforms.length;i++){
 			if(window.location.host.indexOf(this.platforms[i])!=-1){
@@ -3458,82 +2722,11 @@ function QueryCoupon(historyObject){
 			commonFunctionObject.GMsetValue(recordBrowsingHistoryKey,histories.slice(0,60));
 		}
 	};
-	this.browsingHistoryGoods=async function(platform, goodsId){
-		let recordPlatform = platform;
-		if(recordPlatform=="tmall"){ //淘宝，天猫合并为在一起
-			recordPlatform = "taobao";
-		}
-		
-		const visitUrl = window.location.href;
-		let elementName = null;
-		if(/^https:\/\/detail\.tmall\.com\/item\.htm/.test(visitUrl) 
-			|| /^https:\/\/item\.taobao\.com\/item\.htm/.test(visitUrl)
-		){
-			elementName={
-				"price":"span[class^='priceText--']",
-				"slider":"ul[class^='thumbnails--'] >li >img",
-				"title":"div[class^='ItemTitle--']>h1"
-			}
-		}else if(/^https:\/\/chaoshi\.detail\.tmall\.com\/item\.htm/.test(visitUrl)){
-			elementName={
-				"price":"span[class^='Price--priceText--']",
-				"slider":"ul[class^='PicGallery--thumbnails--'] img",
-				"title":"div[class^='ItemHeader--root--'] >h1"
-			}
-		}else if(/^https:\/\/detail\.tmall\.hk\/hk\/item\.htm/.test(visitUrl)){
-			elementName={
-				"price":"span[class^='Price--priceText--']",
-				"slider":"li[class^='PicGallery--thumbnail--'] img",
-				"title":"div[class^='ItemHeader--root--']>h1"
-			}
-		}else if(/^https:\/\/item\.jd\.com/.test(visitUrl) 
-			|| /^https:\/\/npcitem\.jd\.hk/.test(visitUrl)
-			|| /^https:\/\/item\.yiyaojd\.com/.test(visitUrl)
-			|| /^https:\/\/item\.jkcsjd\.com/.test(visitUrl)
-		){
-			elementName={
-				"price":"span.p-price >.price",
-				"slider":"div[id^='main-img-'] img",
-				"title":"div[class='sku-name']"
-			}
-		}else if(/^https:\/\/detail\.vip\.com\/detail-/.test(visitUrl)){
-			elementName={
-				"price":"span.sp-price",
-				"slider":"#J-img-content img",
-				"title":"p.pib-title-detail"
-			}
-		}
-		
-		if(elementName){
-			const promiseArray = [
-				commonFunctionObject.getElementObject(elementName.price, document.body, false, 100, 10*1000),
-				commonFunctionObject.getElementObject(elementName.slider, document.body, true, 100, 10*1000),
-				commonFunctionObject.getElementObject(elementName.title, document.body, true, 100, 10*1000),
-			];
-			Promise.all(promiseArray).then((elements)=>{
-				if(elements.length!=3){
-					return;
-				}
-				const priceElement = elements[0], sliderElement = elements[1], titleElement = elements[2];
-				if(sliderElement){
-					const imgSrc = sliderElement.getAttribute("src");
-					let price = priceElement ? priceElement.innerText : "--";
-					const title = titleElement ? titleElement.innerText : "--";
-					price = price.replace(/\t|\r|\s|￥|¥/g,"");						
-					const goods = {"id":goodsId, "url":window.location.href, "pic":imgSrc, "date":(new Date()).getTime(), "price":price, "title":title}
-					this.historyObject.push(recordPlatform, goods);
-				}
-			});
-		}
-	};
 	this.createHtml=async function(platform, goodsId, goodsName){
 		if(!platform || !goodsId){
 			return "kong";
 		}
-		
 		this.browsingHistoryMark(platform, goodsId); //把浏览记录给存在本地
-		this.browsingHistoryGoods(platform, goodsId);  //把商品记录下来，包括title、价格和主图
-		
 		let addition = "";
 		if(platform=="vpinhui"){
 			const vip = goodsId.split("-");
@@ -3704,203 +2897,206 @@ function QueryCoupon(historyObject){
 			if(!platform) return;
 			//如果sku太多就折叠,不然移动端体验太差了
 			if(platform=="tmall" || platform=="taobao"){
-				commonFunctionObject.getElementObject("[class='skuItemWrapper']", document.body, false, 10, 1500).then((skuItemWrapper)=>{
+				commonFunctionObject.getElementObject("div[class^='skuWrapper--']", document.body, false, 10, 1500).then((skuItemWrapper)=>{
 					if(skuItemWrapper != null){
 						const { style } = skuItemWrapper;
-						style.maxHeight = "350px";
+						style.maxHeight = "400px";
 						style.overflow = "auto";
 					}
 				}).catch(()=>{});
+			}else if(platform=="jd"){
+				const skuItemWrapper = document.querySelector("#choose-attrs");
+				if(skuItemWrapper){
+					const { style } = skuItemWrapper;
+					style.maxHeight = "400px";
+					style.overflow = "auto";
+				}
 			}
 			const goodsData = await this.getGoodsData(platform);
 			this.createHtml(platform, goodsData.goodsId, goodsData.goodsName);
 		}
 	};
 }
-function SearchPageObject(historyObject){
+
+function SearchPageObject(){
 	this.intervalIsRunComplete = true;  //定时任务一个循环是否完成
 	this.histories = commonFunctionObject.GMgetValue(recordBrowsingHistoryKey, []);
-	this.pickupSearchElements=function(){ //收集列表的元素
+	this.isRun = function(){
+		const visitHref = window.location.href;
+		const allows = [
+			/^https:\/\/www\.taobao\.com(\/|\/\?)?/i,//淘宝首页
+			/^https:\/\/s\.taobao\.com/i,
+			/^https:\/\/shop(\d+)\.taobao\.com/i, 
+			/^https:\/\/www\.tmall\.com(\/|\/\?)?/i,//天猫首页
+			/pages\.tmall\.com/i,
+			/list\.tmall\.com/i,
+			/list\.tmall\.hk/i,
+			/tmall\.com\/category/i,
+			/tmall\.com\/search/i,
+			/tmall\.com\/shop/i,
+			/tmall\.com\/\?q=/i,
+			/maiyao\.liangxinyao\.com/i,
+			/^https:\/\/www\.jd\.com(\/|\/\?)?/i, //京东主页
+			/search\.jd\.com/i,
+			/search\.jd\.hk/i,
+			/pro\.jd\.com\/mall/i,
+			/jd\.com\/view_search/i, //商店主页
+			/category\.vip\.com/i,
+			/list\.vip\.com/i
+		];
+		let isAllow = false;
+		for(let i=0; i<allows.length; i++){
+			if(allows[i].test(visitHref)){
+				isAllow = true;
+				break;
+			}
+		}
+		return isAllow;
+	};
+	
+	this.requestConf=function(){
+		return new Promise((resolve, reject)=>{
+			commonFunctionObject.request("GET", "https://tt.shuqiandiqiu.com/api/plugin/load/conf", null).then((data)=>{
+				if(data.result=="success" && !!data.data){
+					resolve(data.data);
+				}else{
+					resolve(null);
+				}
+			});
+		});
+	};
+	
+	this.pickupSearchElements=function(conf){ //收集列表的元素
 		const selectorElementList = new Array();
 		const url = window.location.href;
-		if(url.indexOf("://s.taobao.com/search")!=-1 || url.indexOf("://s.taobao.com/list")!=-1) { //淘宝搜索页面
-			selectorElementList.push({"element":".items >.item", "page":"taobao"});
-	
-			selectorElementList.push({"element":".Content--content--sgSCZ12 .Card--doubleCardWrapper--L2XFE73", "page":"taobao_new"});
-			selectorElementList.push({"element":".Content--content--sgSCZ12 .Card--listCardWrapper--ax09OfT", "page":"taobao_new"});
-			selectorElementList.push({"element":".Content--content--sgSCZ12 .Card--doubleCardWrapperMall--uPmo5Bz", "page":"taobao_new"});
-			selectorElementList.push({"element":".Content--content--sgSCZ12 .Card--listCardWrapperMall--E3jI8L4", "page":"taobao_new"});
-	
-		}else if(url.indexOf("taobao.com/category")!=-1){ //淘宝店铺分类
-			selectorElementList.push({"element":"dl.item", "page":"taobao_category"});
-		}else if(url.indexOf("taobao.com/search.htm")!=-1){ //淘宝店铺搜索
-			selectorElementList.push({"element":"dl.item", "page":"taobao_shop_search"});
-		}
-		else if (url.indexOf("://list.tmall.com/search_product.htm")!=-1 || url.indexOf("://list.tmall.com//search_product.htm")!=-1
-			|| url.indexOf("://list.tmall.com/coudan/search_product.htm")!=-1
-			|| url.indexOf("://pages.tmall.com/wow/an/cs/search")!=-1) { //天猫超市
-			selectorElementList.push({"element":".product", "page":"tmall_chaoshi_search"});
-			selectorElementList.push({"element":".chaoshi-recommend-list .chaoshi-recommend-item", "page":"tmall_chaoshi_search_new"}); //新天猫超市
-			selectorElementList.push({"element":".feeds-list .feeds-item", "page":"tmall_chaoshi_search_20240115"}); //天猫超市新页面https://pages.tmall.com/wow/an/cs/search%2F18a4077f847?spm=a3204.7084713.1996500281.13.z3hXwd&s=0&user_id=725677994&area_code=330100&cat=50514029&active=1&style=g&acm=lb-zebra-27092-331852.1003.4.457104&search_condition=1&sort=s&scm=1003.4.lb-zebra-27092-331852.OTHER_14434954372593_457104&n=40#/?q=%E7%89%99%E8%86%8F&sort=s&page_no=1&spos=&brand=&prop=&cat=50514008
-	
-		}else if (url.indexOf("//list.tmall.hk/search_product")!=-1) { //天猫国际
-			selectorElementList.push({"element":"#J_ItemList .product", "page":"tmall_hk"});
-		}else if(url.indexOf("tmall.com/category-")!=-1){ //天猫分类
-			selectorElementList.push({"element":"#J_ShopSearchResult dl.item", "page":"tmall_category"});
-		}else if(url.indexOf("tmall.com/category-")!=-1){ //天猫旗舰店分类
-			selectorElementList.push({"element":"#J_ShopSearchResult dl.item", "page":"tmall_category"});
-		}else if(url.indexOf(".tmall.com/shop/view_shop.htm")!=-1){ //天猫旗舰全部展示
-			selectorElementList.push({"element":"dl.item", "page":"tmall_shop_01"});
-		}else if(url.indexOf(".tmall.com/search.htm")!=-1){
-			selectorElementList.push({"element":"dl.item", "page":"tmall_shop_search"});
-		}
-		else if(url.indexOf("//maiyao.liangxinyao.com/shop/view_shop.htm")!=-1 
-			|| url.indexOf("//maiyao.liangxinyao.com/search.htm")!=-1
-			|| url.indexOf("//maiyao.liangxinyao.com/category")!=-1){ //阿里大药房
-			selectorElementList.push({"element":"#J_ShopSearchResult dl.item", "page":"ali_yao"});
-		}
-		else if (url.indexOf("//search.jd.com/Search")!=-1 || url.indexOf("//search.jd.com/search")!=-1) { //京东搜索
-			selectorElementList.push({"element":"#J_goodsList li.gl-item", "page":"jd_search"});
-		}else if(url.indexOf("//search.jd.hk/Search")!=-1){ //京东国际https://search.jd.hk/Search?keyword=ds
-			selectorElementList.push({"element":"#plist li.gl-item", "page":"jd_hk_search"}); //可能已弃用
-			selectorElementList.push({"element":"li[class^='productList_']", "page":"jd_hk_new_search"});//20240119添加
-		}else if(url.indexOf("//mall.jd.com/view_search")!=-1){ //京东大药房
-			selectorElementList.push({"element":"li.jSubObject", "page":"jd_yao_search"});
-		}else if(url.indexOf("www.jd.com")!=-1 && window.location.pathname=="/"){
-			selectorElementList.push({"element":"#feedContent0 li.more2_item_good", "page":"jd_homepage"});
-		}
-		else if(url.indexOf("category.vip.com/suggest.php")!=-1){
-			selectorElementList.push({"element":"#J_searchCatList .c-goods-item", "page":"vpinhui_search_page"});
-		}else if(url.indexOf("://list.vip.com")!=-1){
-			selectorElementList.push({"element":"#J_wrap_pro_add .c-goods-item", "page":"vpinhui_list"});
+		let confFilter = conf;
+		try{
+			confFilter = confFilter.replace(/\\\\/g,"\\");
+		}catch(e){}
+		const confJson = JSON.parse(confFilter);
+		for(let key in confJson){
+			if(!confJson.hasOwnProperty(key)){
+				continue;
+			}
+			for(let i=0; i<confJson[key].length; i++){
+				const itemJson = confJson[key][i];
+				if(!itemJson.hasOwnProperty("elements") || !itemJson.hasOwnProperty("matches")){
+					continue;
+				}
+				const {elements, matches} = itemJson;
+				const isMatch = matches.map((reg)=>(new RegExp(reg, "i")).test(url)).some((res)=>res);
+				if(isMatch){
+					for(let j=0; j<elements.length; j++){
+						selectorElementList.push({
+							"element":elements[j]["element"],
+							"findA":elements[j]["findA"],
+							"page":elements[j]["page"]
+						});
+					}
+				}
+			}
 		}
 		return selectorElementList;
 	};
-	this.createAllElementHtml=function(elementData){ //为所有的商品创建提示
-		const self = this;
-		$(elementData.element).each(function(){  //遍历所有的商品框
-			self.createOneElementHtml($(this), elementData);
+	
+	
+	this.createAllElementHtml=function(items){ //为所有的商品创建提示
+		this.intervalIsRunComplete = false;
+		const promises = [];
+		items.forEach((item)=>{
+			promises.push(this.createOneElementHtml(item));
 		});
-		self.intervalIsRunComplete = true;
-	};
-	this.markBrowsingHistory=function($element, mark){
-		if(this.histories.includes(mark)){
-			$element.append(browsedHtml);
-		}
+		Promise.all(promises).then((result)=>{
+			this.intervalIsRunComplete = true;
+		});
 	};
 	
 	/**
 	 * 为商品box添加有券提醒
-	 * @param {Object} $element  每一个商品box
-	 * @param {Object} elementData id and page
 	 */
-	this.createOneElementHtml=async function($element, elementData){  //查询到每个商品list
-		if($element.attr("honghaoerbox")){  //当存在时，说明已经处理过了
-			return;
-		}
-		
+	this.createOneElementHtml=function(item){  //查询到每个商品list
+		const {element, page, findA} = item;
 		const self = this;
-		$element.attr("honghaoerbox","true");
-		$element.css("position","relative");
-		var page = elementData.page;
-		var goodsDetailUrl = null;
-		
-		if(page==="taobao"){
-			goodsDetailUrl = $element.find("a[id^='J_Itemlist_TLink_']").attr("href");
-		}else if(page==="taobao_new"){
-			let href = $element.attr("href");
-			goodsDetailUrl = href.indexOf("http") == -1 ? (location.protocol + href) : href;
-		}else if(page==="taobao_category"){
-			goodsDetailUrl = $element.find(".J_TGoldData").attr("href");
-		}else if(page==="taobao_shop_search"){
-			goodsDetailUrl = $element.find(".J_TGoldData").attr("href");
-		}else if(page==="ali_yao"){
-			goodsDetailUrl = $element.find(".J_TGoldData").attr("href");
-		}else if(page==="tmall_chaoshi_search"){
-			let href = $element.find("div.product-img").find("a").attr("href");
-			goodsDetailUrl = href.indexOf("http") ==-1 ? (location.protocol + href) : href;
-		}else if(page==="tmall_chaoshi_search_new"){
-			let href = !!$element.attr("href")?$element.attr("href"):$element.find("a").attr("href");
-			goodsDetailUrl = href.indexOf("http") ==-1 ? (location.protocol + href) : href;
-		}else if(page==="tmall_hk"){
-			goodsDetailUrl = $element.find("a.productImg").attr("href");
-		}else if(page==="tmall_category"){
-			goodsDetailUrl = $element.find(".J_TGoldData").attr("href");
-		}else if(page==="tmall_shop_01"){
-			goodsDetailUrl = $element.find("dt.photo").find("a").attr("href");
-		}else if(page==="tmall_shop_search"){
-			goodsDetailUrl = $element.find(".J_TGoldData").attr("href");
-		}else if(page=="tmall_chaoshi_search_20240115"){
-				goodsDetailUrl = $element.find("a").attr("href");
-		}
-		else if(page==="jd_search"){
-			goodsDetailUrl = $element.find("div.p-img").find("a").attr("href");
-		}else if(page==="jd_hk_search"){
-			goodsDetailUrl = $element.find("div.p-img").find("a").attr("href");
-		}else if(page==="jd_hk_new_search"){
-			goodsDetailUrl = $element.find("a").attr("href");
-		}else if(page==="jd_yao_search"){
-			goodsDetailUrl = $element.find("div.jPic").find("a").attr("href");
-		}else if(page=="jd_homepage"){
-			goodsDetailUrl = $element.find("a[class='more2_lk']").attr("href");
-		}
-		else if(page=="vpinhui_search_page"){
-			goodsDetailUrl = $element.find("a").attr("href");
-		}else if(page=="vpinhui_list"){
-			goodsDetailUrl = $element.find("a").attr("href");
-		}
-		if(!goodsDetailUrl){
-			return;
-		}
-		var analysisData = null;
-		if(page.indexOf("jd_")!=-1){
-			var jdId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl);
-			if(!!jdId) analysisData = {"id":jdId, "platform":"jd"};
-		}else if(page.indexOf("vpinhui_")!=-1){
-			var vipId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl).replace("detail-","");;
-			if(!!vipId){
-				analysisData = {"id":vipId.split("-")[1], "platform":"vpinhui"};
+		return new Promise(function(resolve, reject){
+			if(element.attr("honghaoerbox")){
+				resolve(-10000);
+				return;
 			}
-		}else{
-			var platform = commonFunctionObject.getEcommercePlatform(goodsDetailUrl);
-			var id = commonFunctionObject.getParamterQueryUrl(goodsDetailUrl, "id");
-			if(platform && id){
-				analysisData = {"id":id, "platform":platform};
-			}
-		}
-		if(!analysisData){
-			return;
-		}
-		this.markBrowsingHistory($element, analysisData.platform + "_" + analysisData.id);
-		
-		try{
-			const searchUrl = "https://j.jiayoushichang.com/api/ebusiness/coupon/exist/"+analysisData.platform+"?id="+analysisData.id;
-			const data = await commonFunctionObject.request("GET", searchUrl, null);
-			if(data.result=="success" && !!data.data){
-				const { tip, encryptLink } = JSON.parse(data.data);
-				if(tip){
-					$element.append(tip);
+			element.attr("honghaoerbox","true");
+			element.css("position","relative");
+			element.on("click",function(){
+				$(this).append(browsedHtml);
+			});
+			
+			var goodsDetailUrl = null;
+			if(findA==="this"){
+				goodsDetailUrl = element.attr("href");
+			}else if(/^child@/.test(findA)){
+				const elementA = element.find(findA.replace(/^child@/,""));
+				if(elementA){
+					goodsDetailUrl = elementA.attr("href");
 				}
-				if(encryptLink){
-					let decryptUrl = null;
-					try{
-						const decryptLink = atob(encryptLink);
-						decryptUrl = decryptLink.split('').reverse().join('');
-					}catch(e){}
-					if(decryptUrl){
-						self.relativeJu(page, $element, decryptUrl);
+			}
+			if(!goodsDetailUrl){
+				resolve(-20000);
+				return;
+			}
+			
+			var analysisData = null;
+			if(page.indexOf("jd_")!=-1){
+				var jdId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl);
+				if(!!jdId) analysisData = {"id":jdId, "platform":"jd"};
+			}else if(page.indexOf("vpinhui_")!=-1){
+				var vipId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl).replace("detail-","");;
+				if(!!vipId){
+					analysisData = {"id":vipId.split("-")[1], "platform":"vpinhui"};
+				}
+			}else{
+				var platform = commonFunctionObject.getEcommercePlatform(goodsDetailUrl);
+				var id = commonFunctionObject.getParamterQueryUrl(goodsDetailUrl, "id");
+				if(platform && id){
+					analysisData = {"id":id, "platform":platform};
+				}
+			}
+			if(!analysisData){
+				resolve(-30000);
+				return;
+			}
+			
+			const mark = analysisData.platform + "_" + analysisData.id;
+			if(self.histories.includes(mark)){
+				element.append(browsedHtml);
+			}
+			
+			const searchUrl = "https://j.jiayoushichang.com/api/ebusiness/coupon/exist/"+analysisData.platform+"?id="+analysisData.id;
+			commonFunctionObject.request("GET", searchUrl, null).then((data)=>{
+				if(data.result=="success" && !!data.data){
+					const { tip, encryptLink } = JSON.parse(data.data);
+					if(tip){
+						element.append(tip);
+					}
+					if(encryptLink){
+						let decryptUrl = null;
+						try{
+							const decryptLink = atob(encryptLink);
+							decryptUrl = decryptLink.split('').reverse().join('');
+						}catch(e){}
+						if(decryptUrl){
+							self.relativeJu(page, element, decryptUrl);
+						}
 					}
 				}
-			}
-		}catch(e){
-			console.log("查券出现异常",e);
-		}
+				resolve(10000);
+			}).catch(()=>{
+				resolve(-40000);
+			});
+		});		
 	};
-	this.relativeJu=function(page, $element, decryptUrl){
+	this.relativeJu=function(page, element, decryptUrl){
 		const self = this;
 		try{
 			if(page.indexOf("jd_")!=-1){
-				$element.find("a").each(function(){
+				element.find("a").each(function(){
 					if($(this).attr("href").indexOf("item.jd.com")!=-1){
 						$(this).removeAttr("onclick");
 						$(this).unbind("click").bind("click", function(e){
@@ -3912,13 +3108,13 @@ function SearchPageObject(historyObject){
 				});
 			}
 			else if(page.indexOf("taobao_")!=-1 || page.indexOf("tmall_")!=-1){
-				$element.unbind("click").bind("click",function(e){
+				element.unbind("click").bind("click",function(e){
 					const target = $(e.target);
 					const tagName = target.prop("tagName").toUpperCase();
 					let isPreventDefault = false;
 					if(tagName==="A"){ //只有点击A标签才去判断
 						const href = target.attr("href");
-						const isDetail = [/detail\.tmall\.com\/item\.htm/, /item\.taobao\.com\/item\.htm/]
+						const isDetail = [/detail\.tmall\.com/, /item\.taobao\.com/]
 							.map((reg)=> reg.test(href))
 							.some((result) => result);
 						if(isDetail){
@@ -3935,7 +3131,7 @@ function SearchPageObject(historyObject){
 				});
 			}
 			else if(page.indexOf("vpinhui_")!=-1){
-				$element.find("a").each(function(){
+				element.find("a").each(function(){
 					if($(this).attr("href").indexOf("detail.vip.com/detail-")!=-1){
 						$(this).unbind("click").bind("click", function(e){
 							e.preventDefault();
@@ -3949,35 +3145,48 @@ function SearchPageObject(historyObject){
 			console.log(e);
 		}
 	};
+	
 	this.searchPage=function(selectorElementList){
-		if(!this.intervalIsRunComplete){
-			return;
-		}
+		const items = [];
 		selectorElementList.forEach((elementData)=>{
-			if(!!elementData){
-				this.createAllElementHtml(elementData);
-			}
-		});
-	}
-	this.start=function(){
-		const selectorElementList = this.pickupSearchElements();
-		selectorElementList.forEach((elementData)=>{
-			if(!!elementData){
-				$("body").on("click",elementData.element,function(){
-					$(this).append(browsedHtml);
+			if(elementData.element){
+				$(elementData.element).each(function(){
+					items.push({"element":$(this), "findA": elementData.findA, "page":elementData.page});
 				});
 			}
 		});
-		setInterval(()=>{
-			this.searchPage(selectorElementList);
-		}, 1000);
+		if(items.length>0){
+			this.createAllElementHtml(items);
+		}
+	};
+	
+	this.start=function(){
+		if(this.isRun()){
+			this.requestConf().then((conf)=>{
+				const selectorElementList = this.pickupSearchElements(conf);
+				if(this.intervalIsRunComplete){
+					this.searchPage(selectorElementList);
+				}
+				setInterval(()=>{
+					if(this.intervalIsRunComplete){
+						this.searchPage(selectorElementList);
+					}
+				}, 1500);
+			});
+		}
 	};
 }
 try{
-	const historyObject = new HistoryObject();
-	(new SearchPageObject(historyObject)).start();
-	(new QueryCoupon(historyObject)).start();
-	historyObject.start();
+	(new SearchPageObject()).start();
+	(new QueryCoupon()).start();
+	
+	if(/taobao|jd|tmall|jkcsjd|vip|vipglobal|yiyaojd|liangxinyao/.test(window.location.host)){
+		GM_registerMenuCommand("清除商品浏览记录", ()=> {
+			if(confirm('此弹窗来自脚本-[🔥]!!网购小助手,不花冤枉钱\n是否要移除所有的浏览记录？移除后将不可恢复...')){
+				commonFunctionObject.GMsetValue(recordBrowsingHistoryKey,[]); //已浏览标识
+			}
+		});
+	}
 }catch(e){
 	console.log("优惠券查询：error："+e);
 }
