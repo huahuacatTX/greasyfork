@@ -67,22 +67,22 @@
 // @include           *://www.douyin.com/*
 // @include           *://*.douyinvod.com/*
 // @include           *://www.kuaishou.com/*
-// @match             *://*.taobao.com/*
-// @match             *://*.tmall.com/*
-// @match             *://*.tmall.hk/*
-// @match             *://*.liangxinyao.com/*
-// @match             *://chaoshi.detail.tmall.com/*
-// @match             *://pages.tmall.com/wow/an/cs/search**
-// @match             *://*.jd.com/*
-// @match             *://*.jd.hk/*
-// @match             *://item.jkcsjd.com/*
-// @match             *://*.yiyaojd.com/*
-// @match             *://www.vipglobal.hk
-// @match             *://*.vip.com/*
-// @match             *://detail.vip.com/detail-*
-// @match             *://www.vipglobal.hk/detail-*
-// @match             *://category.vip.com/suggest.php**
-// @match             *://list.vip.com/*.html
+// @include           *://*.taobao.com/*
+// @include           *://*.tmall.com/*
+// @include           *://*.tmall.hk/*
+// @include           *://*.liangxinyao.com/*
+// @include           *://chaoshi.detail.tmall.com/*
+// @include           *://pages.tmall.com/wow/an/cs/search**
+// @include           *://*.jd.com/*
+// @include           *://*.jd.hk/*
+// @include           *://item.jkcsjd.com/*
+// @include           *://*.yiyaojd.com/*
+// @include           *://www.vipglobal.hk
+// @include           *://*.vip.com/*
+// @include           *://detail.vip.com/detail-*
+// @include           *://www.vipglobal.hk/detail-*
+// @include           *://category.vip.com/suggest.php**
+// @include           *://list.vip.com/*.html
 // @exclude           *://jianghu.taobao.com/*
 // @exclude           *://login.taobao.com/*
 // @exclude           *://uland.taobao.com/*
@@ -96,6 +96,7 @@
 // @exclude           *://passport.shop.jd.com/*
 // @exclude           *://passport.vip.com/*
 // @exclude           *://huodong.taobao.com/wow/z/guang/gg_publish/*
+// @exclude           *://loginmyseller.taobao.com/*
 // @include           *://www.tiktok.com/@*
 // @include           *://www.youtube.com/watch**
 // @include           *://www.youtube.com/shorts**
@@ -125,8 +126,8 @@
 // @license           AGPL License
 // @charset		      UTF-8
 // @run-at            document-idle
-// @updateURL         https://huahuacattx.github.io/huahuacat.user.js
-// @downloadURL       https://huahuacattx.github.io/huahuacat.user.js
+// @updateURL         https://api.staticj.top/script/update/huahuacat_pro_union.user.js
+// @downloadURL       https://api.staticj.top/script/update/huahuacat_pro_union.user.js
 // ==/UserScript==
 
 (function () {
