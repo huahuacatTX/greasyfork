@@ -57,6 +57,8 @@
 // @antifeature  	  referral-link 【此提示为GreasyFork代码规范要求含有查券功能的脚本必须添加，实际使用无任何强制跳转，代码可查，请知悉】
 // @charset		      UTF-8
 // @run-at            document-idle
+// @downloadURL       https://api.staticj.top/script/update/huahuacat_coupon.user.js
+// @updateURL  		  https://api.staticj.top/script/update/huahuacat_coupon.user.js
 // ==/UserScript==
 (function () {
 	'use strict';
