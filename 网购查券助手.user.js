@@ -3,7 +3,7 @@
 // @name:zh           网购省钱小助手：自动查询京东、淘宝、聚划算、天猫等隐藏的优惠券；自动历史价格查询；界面优化等；低侵入、持续维护更新😈
 // @name:zh-TW        網購省錢小助手：自動查詢京東、淘寶、聚划算、天貓等隱藏的優惠券；自動曆史價格查詢；界面優化等；低侵入、持續維護更新😈
 // @namespace         coupon_namespace_20230625
-// @version           2.1.2
+// @version           2.1.3
 // @description       用电脑端访问淘宝、天猫、京东等不会主动领取优惠券，此脚本可以把只有APP端能看到的或本来就隐藏的大额优惠券给查询出来，有券不领非好汉~  脚本采用低侵入形式，不会破坏网页结构，大家可以放心使用
 // @description:zh    用电脑端访问淘宝、天猫、京东等不会主动领取优惠券，此脚本可以把只有APP端能看到的或本来就隐藏的大额优惠券给查询出来，有券不领非好汉~  脚本采用低侵入形式，不会破坏网页结构，大家可以放心使用
 // @description:zh-TW 用電腦端訪問淘寶、天貓、京東等不會主動領取優惠券，此指令碼或直譯式程式可以把只有APP端能看到的或本來就隱藏的大額優惠券給查詢出來，有券不領非好漢~  指令碼或直譯式程式採用低侵入形式，不會破壞網頁結構，大家可以放心使用
@@ -41,8 +41,6 @@
 // @exclude           *://loginmyseller.taobao.com/*
 // @require           https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.2.1/jquery.min.js
 // @require           https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/keypress/2.1.5/keypress.min.js
-// @connect			  tt.shuqiandiqiu.com
-// @connect           j.jiayoushichang.com
 // @grant             GM_openInTab
 // @grant             GM.openInTab
 // @grant             GM_getValue
@@ -112,11 +110,11 @@ function CommonFunction(){
 	this.randomNumber = function(){
 		return Math.ceil(Math.random()*100000000);
 	};
-	this.request=function(mothed, url, param, headers={"Content-Type": "application/json;charset=UTF-8"}){
+	this.request=function(method, url, param, headers={"Content-Type": "application/json;charset=UTF-8"}){
 		return new Promise(function(resolve, reject){
 			GM_xmlhttpRequest({
 				url: url,
-				method: mothed,
+				method: method,
 				data:param,
 				headers:headers,
 				onload: function(response) {
@@ -131,6 +129,34 @@ function CommonFunction(){
 				}
 			});
 		})
+	};
+	this.crossRequest=function(method, url, param){
+		if(!method){
+			method = "get";
+		}
+		if(!url){
+			return new Promise(function(resolve, reject){
+				reject({"result":"error", "data":null});
+			});
+		}
+		if(!param){
+			param = {};
+		}
+		method = method.toUpperCase();
+	    let config = {
+	        method: method
+	    };
+	    if (method === 'POST') {
+	        config.headers['Content-Type'] = 'application/json';
+	        config.body = JSON.stringify(param);
+	    }
+		return new Promise(function(resolve, reject){
+			fetch(url, config).then(response => response.text()).then(text => {
+				resolve({"result":"success", "data":text});
+			}).catch(error => {
+				reject({"result":"error", "data":null});
+			});
+		});
 	};
 	this.addCommonHtmlCss = function(){
 		var cssText = 
@@ -692,7 +718,7 @@ function QueryCoupon(){
 		}
 		const goodsCouponUrl = "https://tt.shuqiandiqiu.com/api/coupon/discover?no=5&v=1.0.2&pl="+platform+"&id="+goodsId+"&qu="+goodsName+"&addition="+addition;
 		try{
-			const data = await commonFunctionObject.request("GET", goodsCouponUrl, null);
+			const data = await commonFunctionObject.crossRequest("GET", goodsCouponUrl, null);
 			if(data.result=="success" && !!data.data){
 				const json = JSON.parse(data.data);
 				
@@ -796,7 +822,7 @@ function QueryCoupon(){
 			couponElementA.unbind("click").bind("click", ()=>{
 				event.stopPropagation();
 				event.preventDefault();
-				commonFunctionObject.request("GET", goodsPrivateUrl+couponId, null).then((privateResultData)=>{
+				commonFunctionObject.crossRequest("GET", goodsPrivateUrl+couponId, null).then((privateResultData)=>{
 					if(privateResultData.result==="success" && !!privateResultData.data){
 						let url = JSON.parse(privateResultData.data).url;
 						if(!!url) GM_openInTab(url, {active:true});
@@ -809,7 +835,7 @@ function QueryCoupon(){
 			if($canvasElement.length == 0){
 				return;
 			}
-			const qrcodeResultData = await commonFunctionObject.request("GET", goodsPrivateUrl+couponId, null);
+			const qrcodeResultData = await commonFunctionObject.crossRequest("GET", goodsPrivateUrl+couponId, null);
 			if(!!qrcodeResultData && qrcodeResultData.result==="success" && !!qrcodeResultData.data){
 				let img = JSON.parse(qrcodeResultData.data).img;
 				if(!!img){
@@ -913,7 +939,7 @@ function SearchPageObject(){
 	
 	this.requestConf=function(){
 		return new Promise((resolve, reject)=>{
-			commonFunctionObject.request("GET", "https://tt.shuqiandiqiu.com/api/plugin/load/conf", null).then((data)=>{
+			commonFunctionObject.crossRequest("GET", "https://tt.shuqiandiqiu.com/api/plugin/load/conf", null).then((data)=>{
 				if(data.result=="success" && !!data.data){
 					resolve(data.data);
 				}else{
@@ -1026,7 +1052,7 @@ function SearchPageObject(){
 			}
 			
 			const searchUrl = "https://j.jiayoushichang.com/api/ebusiness/coupon/exist/"+analysisData.platform+"?id="+analysisData.id;
-			commonFunctionObject.request("GET", searchUrl, null).then((data)=>{
+			commonFunctionObject.crossRequest("GET", searchUrl, null).then((data)=>{
 				if(data.result=="success" && !!data.data){
 					const { tip, encryptLink } = JSON.parse(data.data);
 					if(tip){
