@@ -3,7 +3,7 @@
 // @name:zh           【PRO版本】B站哔哩哔哩使用增强，全网VIP视频免费破解去广告，知乎使用增强，短视频无水印下载，油管、Facebook等国外视频解析下载等😈
 // @name:zh-TW		  【PRO版本】B站嗶哩嗶哩使用增強，全網VIP視頻免費破解去廣告，知乎使用增強，短視頻無水印下載，油管、Facebook等國外視頻解析下載等😈
 // @namespace         bilibili_namespace_20230625
-// @version           2.2.2
+// @version           2.2.3
 // @description       功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook、Tiktok等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
 // @description:zh    功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook、Tiktok等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
 // @description:zh-TW 功能可選擇性開啟：1、B站使用增強：支援視頻下載(👉支援多P批量快速下載👈)、瀏覽記錄提示、一鍵三連、自動簽到、描述文本網址轉連結等；2、全網VIP視頻解析：愛奇藝、騰訊、優酷、bilibili等視頻免費解析(支援自定義解析介面)；3、知乎使用助手：內容種類標識、問答顯示優化、視頻下載等；4、短視頻去水印下載：支援知乎、抖音、快手等；5、油管、Facebook、Tiktok等國外視頻解析下載；🔥6、搜索引擎功能增強,百度添加網址顯示，google結果新標籤頁開啟燈,導航可自定義網址【指令碼或直譯式程式長期維護更新，完全免費，無廣告，僅限學習交流！！】
@@ -108,8 +108,6 @@
 // @require           https://greasyfork.org/scripts/454236-findandreplacedomtext-huahuacat/code/findAndReplaceDOMText-huahuacat.js?version=1112990
 // @connect           bilibili.com
 // @connect           sct.staticj.top
-// @connect			  tt.shuqiandiqiu.com
-// @connect           j.jiayoushichang.com
 // @connect           tikdownloader.io
 // @grant             unsafeWindow
 // @grant             GM_download
@@ -182,11 +180,11 @@ function CommonFunction(){
 	this.randomNumber = function(){
 		return Math.ceil(Math.random()*100000000);
 	};
-	this.request=function(mothed, url, param, headers={"Content-Type": "application/json;charset=UTF-8"}){
+	this.request=function(method, url, param, headers={"Content-Type": "application/json;charset=UTF-8"}){
 		return new Promise(function(resolve, reject){
 			GM_xmlhttpRequest({
 				url: url,
-				method: mothed,
+				method: method,
 				data:param,
 				headers:headers,
 				onload: function(response) {
@@ -201,6 +199,34 @@ function CommonFunction(){
 				}
 			});
 		})
+	};
+	this.crossRequest=function(method, url, param){
+		if(!method){
+			method = "get";
+		}
+		if(!url){
+			return new Promise(function(resolve, reject){
+				reject({"result":"error", "data":null});
+			});
+		}
+		if(!param){
+			param = {};
+		}
+		method = method.toUpperCase();
+	    let config = {
+	        method: method
+	    };
+	    if (method === 'POST') {
+	        config.headers['Content-Type'] = 'application/json';
+	        config.body = JSON.stringify(param);
+	    }
+		return new Promise(function(resolve, reject){
+			fetch(url, config).then(response => response.text()).then(text => {
+				resolve({"result":"success", "data":text});
+			}).catch(error => {
+				reject({"result":"error", "data":null});
+			});
+		});
 	};
 	this.addCommonHtmlCss = function(){
 		var cssText = 
@@ -2736,7 +2762,7 @@ function QueryCoupon(){
 		}
 		const goodsCouponUrl = "https://tt.shuqiandiqiu.com/api/coupon/discover?no=5&v=1.0.2&pl="+platform+"&id="+goodsId+"&qu="+goodsName+"&addition="+addition;
 		try{
-			const data = await commonFunctionObject.request("GET", goodsCouponUrl, null);
+			const data = await commonFunctionObject.crossRequest("GET", goodsCouponUrl, null);
 			if(data.result=="success" && !!data.data){
 				const json = JSON.parse(data.data);
 				
@@ -2840,7 +2866,7 @@ function QueryCoupon(){
 			couponElementA.unbind("click").bind("click", ()=>{
 				event.stopPropagation();
 				event.preventDefault();
-				commonFunctionObject.request("GET", goodsPrivateUrl+couponId, null).then((privateResultData)=>{
+				commonFunctionObject.crossRequest("GET", goodsPrivateUrl+couponId, null).then((privateResultData)=>{
 					if(privateResultData.result==="success" && !!privateResultData.data){
 						let url = JSON.parse(privateResultData.data).url;
 						if(!!url) GM_openInTab(url, {active:true});
@@ -2853,7 +2879,7 @@ function QueryCoupon(){
 			if($canvasElement.length == 0){
 				return;
 			}
-			const qrcodeResultData = await commonFunctionObject.request("GET", goodsPrivateUrl+couponId, null);
+			const qrcodeResultData = await commonFunctionObject.crossRequest("GET", goodsPrivateUrl+couponId, null);
 			if(!!qrcodeResultData && qrcodeResultData.result==="success" && !!qrcodeResultData.data){
 				let img = JSON.parse(qrcodeResultData.data).img;
 				if(!!img){
@@ -2957,7 +2983,7 @@ function SearchPageObject(){
 	
 	this.requestConf=function(){
 		return new Promise((resolve, reject)=>{
-			commonFunctionObject.request("GET", "https://tt.shuqiandiqiu.com/api/plugin/load/conf", null).then((data)=>{
+			commonFunctionObject.crossRequest("GET", "https://tt.shuqiandiqiu.com/api/plugin/load/conf", null).then((data)=>{
 				if(data.result=="success" && !!data.data){
 					resolve(data.data);
 				}else{
@@ -3070,7 +3096,7 @@ function SearchPageObject(){
 			}
 			
 			const searchUrl = "https://j.jiayoushichang.com/api/ebusiness/coupon/exist/"+analysisData.platform+"?id="+analysisData.id;
-			commonFunctionObject.request("GET", searchUrl, null).then((data)=>{
+			commonFunctionObject.crossRequest("GET", searchUrl, null).then((data)=>{
 				if(data.result=="success" && !!data.data){
 					const { tip, encryptLink } = JSON.parse(data.data);
 					if(tip){
