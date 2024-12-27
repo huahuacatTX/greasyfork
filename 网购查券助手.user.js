@@ -3,7 +3,7 @@
 // @name:zh           网购省钱小助手：自动查询京东、淘宝、聚划算、天猫等隐藏的优惠券；自动历史价格查询；界面优化等；低侵入、持续维护更新😈
 // @name:zh-TW        網購省錢小助手：自動查詢京東、淘寶、聚划算、天貓等隱藏的優惠券；自動曆史價格查詢；界面優化等；低侵入、持續維護更新😈
 // @namespace         coupon_namespace_20230625
-// @version           2.1.3
+// @version           2.1.4
 // @description       用电脑端访问淘宝、天猫、京东等不会主动领取优惠券，此脚本可以把只有APP端能看到的或本来就隐藏的大额优惠券给查询出来，有券不领非好汉~  脚本采用低侵入形式，不会破坏网页结构，大家可以放心使用
 // @description:zh    用电脑端访问淘宝、天猫、京东等不会主动领取优惠券，此脚本可以把只有APP端能看到的或本来就隐藏的大额优惠券给查询出来，有券不领非好汉~  脚本采用低侵入形式，不会破坏网页结构，大家可以放心使用
 // @description:zh-TW 用電腦端訪問淘寶、天貓、京東等不會主動領取優惠券，此指令碼或直譯式程式可以把只有APP端能看到的或本來就隱藏的大額優惠券給查詢出來，有券不領非好漢~  指令碼或直譯式程式採用低侵入形式，不會破壞網頁結構，大家可以放心使用
@@ -25,6 +25,7 @@
 // @match             *://www.vipglobal.hk/detail-*
 // @match             *://category.vip.com/suggest.php**
 // @match             *://list.vip.com/*.html
+// @match             *://*.suning.com/*
 // @exclude           *://jianghu.taobao.com/*
 // @exclude           *://login.taobao.com/*
 // @exclude           *://uland.taobao.com/*
@@ -39,6 +40,7 @@
 // @exclude           *://passport.vip.com/*
 // @exclude           *://huodong.taobao.com/wow/z/guang/gg_publish/*
 // @exclude           *://loginmyseller.taobao.com/*
+// @exclude           *://passport.suning.com/*
 // @require           https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.2.1/jquery.min.js
 // @require           https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/keypress/2.1.5/keypress.min.js
 // @grant             GM_openInTab
@@ -307,16 +309,26 @@ function CommonFunction(){
 		idText = idText.replace(".html","");
 		return idText;
 	};
-	this.getEcommercePlatform=function(url = window.location.href){
+	this.suningParameter=function(url){
+		const regex = /product\.suning\.com\/(\d+\/\d+)\.html/;
+		const match = url.match(regex);
+		if(match){
+			return match[1].replace(/\//g, '-');
+		}
+		return null;
+	};
+	this.getEcommercePlatform=function(host = window.location.host){
 		let platform = "";
-		if(url.indexOf("detail.tmall")!=-1 || url.indexOf("tmall.hk")!=-1 || url.indexOf("pages.tmall.com")!=-1){
-			platform = "tmall";
-		}else if(url.indexOf("taobao.com")!=-1 || url.indexOf("maiyao.liangxinyao.com")!=-1){
+		if(host.indexOf(".taobao.")!=-1 || host.indexOf(".liangxinyao.")!=-1){
 			platform = "taobao";
-		}else if(url.indexOf("jd.com")!=-1 || url.indexOf("npcitem.jd.hk")!=-1 || url.indexOf("yiyaojd.com")!=-1 || url.indexOf("jkcsjd.com")!=-1){
+		}else if(host.indexOf(".tmall.")!=-1){
+			platform = "tmall";
+		}else if(host.indexOf(".jd.")!=-1 || host.indexOf(".yiyaojd.")!=-1 || host.indexOf(".jkcsjd.")!=-1){
 			platform = "jd";
-		}else if(url.indexOf("detail.vip.com")!=-1 || url.indexOf("www.vipglobal.hk")!=-1){
+		}else if(host.indexOf(".vip.")!=-1 || host.indexOf(".vipglobal.")!=-1){
 			platform = "vpinhui";
+		}else if(host.indexOf(".suning.")!=-1){
+			platform = "suning";
 		}
 		return platform;
 	}
@@ -612,7 +624,7 @@ const browsedHtml= `
 `
 function QueryCoupon(){
 	this.platforms = ["detail.tmall.com", "item.taobao.com", "item.jd.com", "item.yiyaojd.com", "npcitem.jd.hk", 
-		"detail.tmall.hk", "detail.vip.com", "item.jkcsjd.com"];
+		"detail.tmall.hk", "detail.vip.com", "item.jkcsjd.com", "product.suning.com"];
 	this.createQrcodeIsResult = true;
 	this.isRun=function(){
 		for(var i=0; i<this.platforms.length;i++){
@@ -661,6 +673,12 @@ function QueryCoupon(){
 		}else if(platform=="vpinhui"){
 			goodsId = commonFunctionObject.getEndHtmlIdByUrl(href).replace("detail-","");
 			const titleObj = document.querySelector("[class='pib-title-detail']");
+			if(!!titleObj){
+				goodsName = titleObj.textContent;
+			}
+		}else if(platform=="suning"){
+			goodsId = commonFunctionObject.suningParameter(href);
+			const titleObj = document.querySelector("#itemDisplayName");
 			if(!!titleObj){
 				goodsName = titleObj.textContent;
 			}
@@ -797,6 +815,8 @@ function QueryCoupon(){
 					$handlerElement.after(htmlText);
 				}else if(platform=="vpinhui"){
 					$handlerElement.after(htmlText);
+				}else if(platform=="suning"){
+					$handlerElement.after(htmlText);
 				}
 			}
 			
@@ -925,7 +945,8 @@ function SearchPageObject(){
 			/pro\.jd\.com\/mall/i,
 			/jd\.com\/view_search/i, //商店主页
 			/category\.vip\.com/i,
-			/list\.vip\.com/i
+			/list\.vip\.com/i,
+			/^https:\/\/(?!product|dfp\.)([^\/]+)\.suning\.com\//i
 		];
 		let isAllow = false;
 		for(let i=0; i<allows.length; i++){
@@ -949,25 +970,24 @@ function SearchPageObject(){
 		});
 	};
 	
-	this.pickupSearchElements=function(conf){ //收集列表的元素
+	this.pickupSearchElements=function(conf, platform){ //收集列表的元素
 		const selectorElementList = new Array();
-		const url = window.location.href;
+		const visitHref = window.location.href;
 		let confFilter = conf;
 		try{
 			confFilter = confFilter.replace(/\\\\/g,"\\");
 		}catch(e){}
 		const confJson = JSON.parse(confFilter);
-		for(let key in confJson){
-			if(!confJson.hasOwnProperty(key)){
-				continue;
-			}
-			for(let i=0; i<confJson[key].length; i++){
-				const itemJson = confJson[key][i];
+		
+		if(confJson.hasOwnProperty(platform)){
+			const platformConfJson = confJson[platform];
+			for(let i=0; i<platformConfJson.length; i++){
+				const itemJson = platformConfJson[i];
 				if(!itemJson.hasOwnProperty("elements") || !itemJson.hasOwnProperty("matches")){
 					continue;
 				}
 				const {elements, matches} = itemJson;
-				const isMatch = matches.map((reg)=>(new RegExp(reg, "i")).test(url)).some((res)=>res);
+				const isMatch = matches.map((reg)=>(new RegExp(reg, "i")).test(visitHref)).some((res)=>res);
 				if(isMatch){
 					for(let j=0; j<elements.length; j++){
 						selectorElementList.push({
@@ -985,13 +1005,21 @@ function SearchPageObject(){
 	
 	this.createAllElementHtml=function(items){ //为所有的商品创建提示
 		this.intervalIsRunComplete = false;
-		const promises = [];
-		items.forEach((item)=>{
-			promises.push(this.createOneElementHtml(item));
-		});
-		Promise.all(promises).then((result)=>{
+		this.processLinksInBatches(items, 18).then((result)=>{
 			this.intervalIsRunComplete = true;
 		});
+	};
+	
+	this.processLinksInBatches = async function(items, batchSize) {
+	    const results = [];
+	    for (let i = 0; i < items.length; i += batchSize) {
+	        const batch = items.slice(i, i + batchSize); // 获取当前批次的链接
+	        const batchResults = await Promise.all(  // 同时处理当前批次中的所有请求
+	            batch.map(item => this.createOneElementHtml(item))
+	        );
+	        results.push(...batchResults); // 保存批次结果
+	    }
+	    return results; // 返回所有结果
 	};
 	
 	/**
@@ -1030,11 +1058,17 @@ function SearchPageObject(){
 				var jdId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl);
 				if(!!jdId) analysisData = {"id":jdId, "platform":"jd"};
 			}else if(page.indexOf("vpinhui_")!=-1){
-				var vipId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl).replace("detail-","");;
+				var vipId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl).replace("detail-","");
 				if(!!vipId){
 					analysisData = {"id":vipId.split("-")[1], "platform":"vpinhui"};
 				}
-			}else{
+			}else if(page.indexOf("suning_")!=-1){
+				var suningId = commonFunctionObject.suningParameter(goodsDetailUrl);
+				if(!!suningId){
+					analysisData = {"id":suningId, "platform":"suning"};
+				}
+			}
+			else{
 				var platform = commonFunctionObject.getEcommercePlatform(goodsDetailUrl);
 				var id = commonFunctionObject.getParamterQueryUrl(goodsDetailUrl, "id");
 				if(platform && id){
@@ -1054,11 +1088,13 @@ function SearchPageObject(){
 			const searchUrl = "https://j.jiayoushichang.com/api/ebusiness/coupon/exist/"+analysisData.platform+"?id="+analysisData.id;
 			commonFunctionObject.crossRequest("GET", searchUrl, null).then((data)=>{
 				if(data.result=="success" && !!data.data){
-					const { tip, encryptLink } = JSON.parse(data.data);
+					const { id, tip, encryptLink } = JSON.parse(data.data);
 					if(tip){
+						//console.log("coupon exist", id);
 						element.append(tip);
 					}
 					if(encryptLink){
+						// console.log("jood job!", id);
 						let decryptUrl = null;
 						try{
 							const decryptLink = atob(encryptLink);
@@ -1124,6 +1160,17 @@ function SearchPageObject(){
 					}
 				});
 			}
+			else if(page.indexOf("suning_")!=-1){
+				element.find("a").each(function(){
+					if($(this).attr("href").indexOf("product.suning.com")!=-1){
+						$(this).unbind("click").bind("click", function(e){
+							e.preventDefault();
+							e.stopPropagation();
+							commonFunctionObject.GMopenInTab(decryptUrl);
+						});
+					}
+				});
+			}
 		}catch(e){
 			console.log(e);
 		}
@@ -1133,7 +1180,7 @@ function SearchPageObject(){
 		const items = [];
 		selectorElementList.forEach((elementData)=>{
 			if(elementData.element){
-				$(elementData.element).each(function(){
+				$(elementData.element + ":not([honghaoerbox='true'])").each(function(){
 					items.push({"element":$(this), "findA": elementData.findA, "page":elementData.page});
 				});
 			}
@@ -1145,8 +1192,9 @@ function SearchPageObject(){
 	
 	this.start=function(){
 		if(this.isRun()){
+			const platform = commonFunctionObject.getEcommercePlatform();
 			this.requestConf().then((conf)=>{
-				const selectorElementList = this.pickupSearchElements(conf);
+				const selectorElementList = this.pickupSearchElements(conf, (platform=="tmall"? "taobao" : platform));
 				if(this.intervalIsRunComplete){
 					this.searchPage(selectorElementList);
 				}
@@ -1163,7 +1211,7 @@ try{
 	(new SearchPageObject()).start();
 	(new QueryCoupon()).start();
 	
-	if(/taobao|jd|tmall|jkcsjd|vip|vipglobal|yiyaojd|liangxinyao/.test(window.location.host)){
+	if(/taobao|jd|tmall|jkcsjd|vip|vipglobal|yiyaojd|liangxinyao|suning/.test(window.location.host)){
 		GM_registerMenuCommand("清除商品浏览记录", ()=> {
 			if(confirm('此弹窗来自脚本-[🔥]!!网购小助手,不花冤枉钱\n是否要移除所有的浏览记录？移除后将不可恢复...')){
 				commonFunctionObject.GMsetValue(recordBrowsingHistoryKey,[]); //已浏览标识
