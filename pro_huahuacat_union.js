@@ -3,7 +3,7 @@
 // @name:zh           【PRO版本】B站哔哩哔哩使用增强，全网VIP视频免费破解去广告，知乎使用增强，短视频无水印下载，油管、Facebook等国外视频解析下载等😈
 // @name:zh-TW		  【PRO版本】B站嗶哩嗶哩使用增強，全網VIP視頻免費破解去廣告，知乎使用增強，短視頻無水印下載，油管、Facebook等國外視頻解析下載等😈
 // @namespace         bilibili_namespace_20230625
-// @version           2.2.4
+// @version           2.2.6
 // @description       功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook、Tiktok等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
 // @description:zh    功能可选择性打开：1、B站使用增强：支持视频下载(👉支持多P批量快速下载👈)、浏览记录提示、一键三连、自动签到、描述文本网址转链接等；2、全网VIP视频解析：爱奇艺、腾讯、优酷、bilibili等视频免费解析(支持自定义解析接口)；3、知乎使用助手：内容种类标识、问答显示优化、视频下载等；4、短视频去水印下载：支持知乎、抖音、快手等；5、油管、Facebook、Tiktok等国外视频解析下载；🔥6、搜索引擎功能增强,百度添加网址显示，google结果新标签页打开灯,导航可自定义网址【脚本长期维护更新，完全免费，无广告，仅限学习交流！！】
 // @description:zh-TW 功能可選擇性開啟：1、B站使用增強：支援視頻下載(👉支援多P批量快速下載👈)、瀏覽記錄提示、一鍵三連、自動簽到、描述文本網址轉連結等；2、全網VIP視頻解析：愛奇藝、騰訊、優酷、bilibili等視頻免費解析(支援自定義解析介面)；3、知乎使用助手：內容種類標識、問答顯示優化、視頻下載等；4、短視頻去水印下載：支援知乎、抖音、快手等；5、油管、Facebook、Tiktok等國外視頻解析下載；🔥6、搜索引擎功能增強,百度添加網址顯示，google結果新標籤頁開啟燈,導航可自定義網址【指令碼或直譯式程式長期維護更新，完全免費，無廣告，僅限學習交流！！】
@@ -81,6 +81,7 @@
 // @include           *://*.vip.com/*
 // @include           *://detail.vip.com/detail-*
 // @include           *://www.vipglobal.hk/detail-*
+// @include             *://*.suning.com/*
 // @include           *://category.vip.com/suggest.php**
 // @include           *://list.vip.com/*.html
 // @exclude           *://jianghu.taobao.com/*
@@ -103,6 +104,7 @@
 // @exclude           *://accounts.youtube.com/*
 // @exclude           *://www.youtube.com/live_chat_replay*
 // @exclude           *://www.youtube.com/persist_identity*
+// @exclude           *://passport.suning.com/*
 // @require           https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.2.1/jquery.min.js
 // @require           https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/keypress/2.1.5/keypress.min.js
 // @require           https://greasyfork.org/scripts/454236-findandreplacedomtext-huahuacat/code/findAndReplaceDOMText-huahuacat.js?version=1112990
@@ -377,16 +379,26 @@ function CommonFunction(){
 		idText = idText.replace(".html","");
 		return idText;
 	};
-	this.getEcommercePlatform=function(url = window.location.href){
+	this.suningParameter=function(url){
+		const regex = /product\.suning\.com\/(\d+\/\d+)\.html/;
+		const match = url.match(regex);
+		if(match){
+			return match[1].replace(/\//g, '-');
+		}
+		return null;
+	};
+	this.getEcommercePlatform=function(host = window.location.host){
 		let platform = "";
-		if(url.indexOf("detail.tmall")!=-1 || url.indexOf("tmall.hk")!=-1 || url.indexOf("pages.tmall.com")!=-1){
-			platform = "tmall";
-		}else if(url.indexOf("taobao.com")!=-1 || url.indexOf("maiyao.liangxinyao.com")!=-1){
+		if(host.indexOf(".taobao.")!=-1 || host.indexOf(".liangxinyao.")!=-1){
 			platform = "taobao";
-		}else if(url.indexOf("jd.com")!=-1 || url.indexOf("npcitem.jd.hk")!=-1 || url.indexOf("yiyaojd.com")!=-1 || url.indexOf("jkcsjd.com")!=-1){
+		}else if(host.indexOf(".tmall.")!=-1){
+			platform = "tmall";
+		}else if(host.indexOf(".jd.")!=-1 || host.indexOf(".yiyaojd.")!=-1 || host.indexOf(".jkcsjd.")!=-1){
 			platform = "jd";
-		}else if(url.indexOf("detail.vip.com")!=-1 || url.indexOf("www.vipglobal.hk")!=-1){
+		}else if(host.indexOf(".vip.")!=-1 || host.indexOf(".vipglobal.")!=-1){
 			platform = "vpinhui";
+		}else if(host.indexOf(".suning.")!=-1){
+			platform = "suning";
 		}
 		return platform;
 	}
@@ -2087,7 +2099,9 @@ function ZhihuHelper(){
 		//此处代码借鉴自 - 知乎增强
 		//原作者：X.I.U
 		//https://greasyfork.org/zh-CN/scripts/419081-%E7%9F%A5%E4%B9%8E%E5%A2%9E%E5%BC%BA
-		if (document.querySelector('.BrandQuestionSymbol, .QuestionAuthor')) return
+		if (document.querySelector('.SpecialQuestionAuthor-Wrapper, .SpecialQuestionAuthor')){
+			return;
+		}
 		let qJson = JSON.parse(document.querySelector('#js-initialData').textContent).initialState.entities.questions[/\d+/.exec(location.pathname)[0]].author,
 			html = `<div class="BrandQuestionSymbol"><a class="BrandQuestionSymbol-brandLink" href="/people/${qJson.urlToken}"><img role="presentation" src="${qJson.avatarUrl}" class="BrandQuestionSymbol-logo" alt=""><span class="BrandQuestionSymbol-name">${qJson.name}</span></a><div class="BrandQuestionSymbol-divider" style="margin-left: 5px;margin-right: 10px;"></div></div>`;
 		document.querySelector('.QuestionHeader-topics').insertAdjacentHTML('beforebegin', html);
@@ -2657,7 +2671,7 @@ const browsedHtml= `
 `
 function QueryCoupon(){
 	this.platforms = ["detail.tmall.com", "item.taobao.com", "item.jd.com", "item.yiyaojd.com", "npcitem.jd.hk", 
-		"detail.tmall.hk", "detail.vip.com", "item.jkcsjd.com"];
+		"detail.tmall.hk", "detail.vip.com", "item.jkcsjd.com", "product.suning.com"];
 	this.createQrcodeIsResult = true;
 	this.isRun=function(){
 		for(var i=0; i<this.platforms.length;i++){
@@ -2706,6 +2720,12 @@ function QueryCoupon(){
 		}else if(platform=="vpinhui"){
 			goodsId = commonFunctionObject.getEndHtmlIdByUrl(href).replace("detail-","");
 			const titleObj = document.querySelector("[class='pib-title-detail']");
+			if(!!titleObj){
+				goodsName = titleObj.textContent;
+			}
+		}else if(platform=="suning"){
+			goodsId = commonFunctionObject.suningParameter(href);
+			const titleObj = document.querySelector("#itemDisplayName");
 			if(!!titleObj){
 				goodsName = titleObj.textContent;
 			}
@@ -2842,6 +2862,8 @@ function QueryCoupon(){
 					$handlerElement.after(htmlText);
 				}else if(platform=="vpinhui"){
 					$handlerElement.after(htmlText);
+				}else if(platform=="suning"){
+					$handlerElement.after(htmlText);
 				}
 			}
 			
@@ -2970,7 +2992,8 @@ function SearchPageObject(){
 			/pro\.jd\.com\/mall/i,
 			/jd\.com\/view_search/i, //商店主页
 			/category\.vip\.com/i,
-			/list\.vip\.com/i
+			/list\.vip\.com/i,
+			/^https:\/\/(?!product|dfp\.)([^\/]+)\.suning\.com\//i
 		];
 		let isAllow = false;
 		for(let i=0; i<allows.length; i++){
@@ -2994,25 +3017,24 @@ function SearchPageObject(){
 		});
 	};
 	
-	this.pickupSearchElements=function(conf){ //收集列表的元素
+	this.pickupSearchElements=function(conf, platform){ //收集列表的元素
 		const selectorElementList = new Array();
-		const url = window.location.href;
+		const visitHref = window.location.href;
 		let confFilter = conf;
 		try{
 			confFilter = confFilter.replace(/\\\\/g,"\\");
 		}catch(e){}
 		const confJson = JSON.parse(confFilter);
-		for(let key in confJson){
-			if(!confJson.hasOwnProperty(key)){
-				continue;
-			}
-			for(let i=0; i<confJson[key].length; i++){
-				const itemJson = confJson[key][i];
+		
+		if(confJson.hasOwnProperty(platform)){
+			const platformConfJson = confJson[platform];
+			for(let i=0; i<platformConfJson.length; i++){
+				const itemJson = platformConfJson[i];
 				if(!itemJson.hasOwnProperty("elements") || !itemJson.hasOwnProperty("matches")){
 					continue;
 				}
 				const {elements, matches} = itemJson;
-				const isMatch = matches.map((reg)=>(new RegExp(reg, "i")).test(url)).some((res)=>res);
+				const isMatch = matches.map((reg)=>(new RegExp(reg, "i")).test(visitHref)).some((res)=>res);
 				if(isMatch){
 					for(let j=0; j<elements.length; j++){
 						selectorElementList.push({
@@ -3030,13 +3052,21 @@ function SearchPageObject(){
 	
 	this.createAllElementHtml=function(items){ //为所有的商品创建提示
 		this.intervalIsRunComplete = false;
-		const promises = [];
-		items.forEach((item)=>{
-			promises.push(this.createOneElementHtml(item));
-		});
-		Promise.all(promises).then((result)=>{
+		this.processLinksInBatches(items, 18).then((result)=>{
 			this.intervalIsRunComplete = true;
 		});
+	};
+	
+	this.processLinksInBatches = async function(items, batchSize) {
+	    const results = [];
+	    for (let i = 0; i < items.length; i += batchSize) {
+	        const batch = items.slice(i, i + batchSize); // 获取当前批次的链接
+	        const batchResults = await Promise.all(  // 同时处理当前批次中的所有请求
+	            batch.map(item => this.createOneElementHtml(item))
+	        );
+	        results.push(...batchResults); // 保存批次结果
+	    }
+	    return results; // 返回所有结果
 	};
 	
 	/**
@@ -3075,11 +3105,17 @@ function SearchPageObject(){
 				var jdId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl);
 				if(!!jdId) analysisData = {"id":jdId, "platform":"jd"};
 			}else if(page.indexOf("vpinhui_")!=-1){
-				var vipId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl).replace("detail-","");;
+				var vipId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl).replace("detail-","");
 				if(!!vipId){
 					analysisData = {"id":vipId.split("-")[1], "platform":"vpinhui"};
 				}
-			}else{
+			}else if(page.indexOf("suning_")!=-1){
+				var suningId = commonFunctionObject.suningParameter(goodsDetailUrl);
+				if(!!suningId){
+					analysisData = {"id":suningId, "platform":"suning"};
+				}
+			}
+			else{
 				var platform = commonFunctionObject.getEcommercePlatform(goodsDetailUrl);
 				var id = commonFunctionObject.getParamterQueryUrl(goodsDetailUrl, "id");
 				if(platform && id){
@@ -3099,11 +3135,13 @@ function SearchPageObject(){
 			const searchUrl = "https://j.jiayoushichang.com/api/ebusiness/coupon/exist/"+analysisData.platform+"?id="+analysisData.id;
 			commonFunctionObject.crossRequest("GET", searchUrl, null).then((data)=>{
 				if(data.result=="success" && !!data.data){
-					const { tip, encryptLink } = JSON.parse(data.data);
+					const { id, tip, encryptLink } = JSON.parse(data.data);
 					if(tip){
+						//console.log("coupon exist", id);
 						element.append(tip);
 					}
 					if(encryptLink){
+						// console.log("jood job!", id);
 						let decryptUrl = null;
 						try{
 							const decryptLink = atob(encryptLink);
@@ -3169,6 +3207,17 @@ function SearchPageObject(){
 					}
 				});
 			}
+			else if(page.indexOf("suning_")!=-1){
+				element.find("a").each(function(){
+					if($(this).attr("href").indexOf("product.suning.com")!=-1){
+						$(this).unbind("click").bind("click", function(e){
+							e.preventDefault();
+							e.stopPropagation();
+							commonFunctionObject.GMopenInTab(decryptUrl);
+						});
+					}
+				});
+			}
 		}catch(e){
 			console.log(e);
 		}
@@ -3178,7 +3227,7 @@ function SearchPageObject(){
 		const items = [];
 		selectorElementList.forEach((elementData)=>{
 			if(elementData.element){
-				$(elementData.element).each(function(){
+				$(elementData.element + ":not([honghaoerbox='true'])").each(function(){
 					items.push({"element":$(this), "findA": elementData.findA, "page":elementData.page});
 				});
 			}
@@ -3190,8 +3239,9 @@ function SearchPageObject(){
 	
 	this.start=function(){
 		if(this.isRun()){
+			const platform = commonFunctionObject.getEcommercePlatform();
 			this.requestConf().then((conf)=>{
-				const selectorElementList = this.pickupSearchElements(conf);
+				const selectorElementList = this.pickupSearchElements(conf, (platform=="tmall"? "taobao" : platform));
 				if(this.intervalIsRunComplete){
 					this.searchPage(selectorElementList);
 				}
@@ -3208,7 +3258,7 @@ try{
 	(new SearchPageObject()).start();
 	(new QueryCoupon()).start();
 	
-	if(/taobao|jd|tmall|jkcsjd|vip|vipglobal|yiyaojd|liangxinyao/.test(window.location.host)){
+	if(/taobao|jd|tmall|jkcsjd|vip|vipglobal|yiyaojd|liangxinyao|suning/.test(window.location.host)){
 		GM_registerMenuCommand("清除商品浏览记录", ()=> {
 			if(confirm('此弹窗来自脚本-[🔥]!!网购小助手,不花冤枉钱\n是否要移除所有的浏览记录？移除后将不可恢复...')){
 				commonFunctionObject.GMsetValue(recordBrowsingHistoryKey,[]); //已浏览标识
