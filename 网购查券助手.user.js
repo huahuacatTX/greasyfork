@@ -3,7 +3,7 @@
 // @name:zh           网购省钱小助手：自动查询京东、淘宝、聚划算、天猫等隐藏的优惠券；自动历史价格查询；界面优化等；低侵入、持续维护更新😈
 // @name:zh-TW        網購省錢小助手：自動查詢京東、淘寶、聚划算、天貓等隱藏的優惠券；自動曆史價格查詢；界面優化等；低侵入、持續維護更新😈
 // @namespace         coupon_namespace_20230625
-// @version           2.1.6
+// @version           2.1.7
 // @description       用电脑端访问淘宝、天猫、京东等不会主动领取优惠券，此脚本可以把只有APP端能看到的或本来就隐藏的大额优惠券给查询出来，有券不领非好汉~  脚本采用低侵入形式，不会破坏网页结构，大家可以放心使用
 // @description:zh    用电脑端访问淘宝、天猫、京东等不会主动领取优惠券，此脚本可以把只有APP端能看到的或本来就隐藏的大额优惠券给查询出来，有券不领非好汉~  脚本采用低侵入形式，不会破坏网页结构，大家可以放心使用
 // @description:zh-TW 用電腦端訪問淘寶、天貓、京東等不會主動領取優惠券，此指令碼或直譯式程式可以把只有APP端能看到的或本來就隱藏的大額優惠券給查詢出來，有券不領非好漢~  指令碼或直譯式程式採用低侵入形式，不會破壞網頁結構，大家可以放心使用
@@ -17,6 +17,7 @@
 // @match             *://pages.tmall.com/wow/an/cs/search**
 // @match             *://*.jd.com/*
 // @match             *://*.jd.hk/*
+// @include           *://item.jingdonghealth.cn/*
 // @match             *://item.jkcsjd.com/*
 // @match             *://*.yiyaojd.com/*
 // @match             *://www.vipglobal.hk
@@ -325,7 +326,7 @@ function CommonFunction(){
 			platform = "taobao";
 		}else if(host.indexOf(".tmall.")!=-1){
 			platform = "tmall";
-		}else if(host.indexOf(".jd.")!=-1 || host.indexOf(".yiyaojd.")!=-1 || host.indexOf(".jkcsjd.")!=-1){
+		}else if(host.indexOf(".jd.")!=-1 || host.indexOf(".yiyaojd.")!=-1 || host.indexOf(".jkcsjd.")!=-1 || host.indexOf(".jingdonghealth.")!=-1){
 			platform = "jd";
 		}else if(host.indexOf(".vip.")!=-1 || host.indexOf(".vipglobal.")!=-1){
 			platform = "vpinhui";
@@ -627,7 +628,7 @@ const browsedHtml = `
 
 function QueryCoupon() {
   this.platforms = ["detail.tmall.com", "item.taobao.com", "item.jd.com", "item.yiyaojd.com", "npcitem.jd.hk",
-    "detail.tmall.hk", "detail.vip.com", "item.jkcsjd.com", "product.suning.com"
+    "detail.tmall.hk", "detail.vip.com", "item.jkcsjd.com", "product.suning.com","item.jingdonghealth.cn"
   ];
   this.createQrcodeIsResult = true;
   this.isRun = function() {
@@ -725,7 +726,7 @@ function QueryCoupon() {
     }
     const goodsCouponUrl = "https://tt.shuqiandiqiu.com/api/coupon/discover?no=5&v=1.0.2&pl="+platform+"&id="+goodsId+"&qu="+goodsName+"&addition="+addition;
     try {
-      const data = await commonFunctionObject.crossRequest("GET", goodsCouponUrl, null);
+      const data = await commonFunctionObject.request("GET", goodsCouponUrl, null);
       if (data.result === "success" && data.data) {
         const json = JSON.parse(data.data);
         await this.createCoupon(platform, json.data);
