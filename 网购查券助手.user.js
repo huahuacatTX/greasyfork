@@ -3,7 +3,7 @@
 // @name:zh           网购省钱小助手：自动查询京东、淘宝、聚划算、天猫等隐藏的优惠券；自动历史价格查询；界面优化等；低侵入、持续维护更新😈
 // @name:zh-TW        網購省錢小助手：自動查詢京東、淘寶、聚划算、天貓等隱藏的優惠券；自動曆史價格查詢；界面優化等；低侵入、持續維護更新😈
 // @namespace         coupon_namespace_20230625
-// @version           2.1.4
+// @version           2.1.6
 // @description       用电脑端访问淘宝、天猫、京东等不会主动领取优惠券，此脚本可以把只有APP端能看到的或本来就隐藏的大额优惠券给查询出来，有券不领非好汉~  脚本采用低侵入形式，不会破坏网页结构，大家可以放心使用
 // @description:zh    用电脑端访问淘宝、天猫、京东等不会主动领取优惠券，此脚本可以把只有APP端能看到的或本来就隐藏的大额优惠券给查询出来，有券不领非好汉~  脚本采用低侵入形式，不会破坏网页结构，大家可以放心使用
 // @description:zh-TW 用電腦端訪問淘寶、天貓、京東等不會主動領取優惠券，此指令碼或直譯式程式可以把只有APP端能看到的或本來就隱藏的大額優惠券給查詢出來，有券不領非好漢~  指令碼或直譯式程式採用低侵入形式，不會破壞網頁結構，大家可以放心使用
@@ -41,8 +41,8 @@
 // @exclude           *://huodong.taobao.com/wow/z/guang/gg_publish/*
 // @exclude           *://loginmyseller.taobao.com/*
 // @exclude           *://passport.suning.com/*
-// @require           https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.2.1/jquery.min.js
-// @require           https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/keypress/2.1.5/keypress.min.js
+// @connect           staticj.top
+// @connect           shuqiandiqiu.com
 // @grant             GM_openInTab
 // @grant             GM.openInTab
 // @grant             GM_getValue
@@ -53,6 +53,7 @@
 // @grant             GM_xmlhttpRequest
 // @grant             GM.xmlHttpRequest
 // @grant             GM_registerMenuCommand
+// @grant             GM_addElement
 // @license           AGPL License
 // @antifeature  	  referral-link 【此提示为GreasyFork代码规范要求含有查券功能的脚本必须添加，实际使用无任何强制跳转，代码可查，请知悉】
 // @charset		      UTF-8
@@ -60,6 +61,7 @@
 // @downloadURL       https://api.staticj.top/script/update/huahuacat_coupon.user.js
 // @updateURL  		  https://api.staticj.top/script/update/huahuacat_coupon.user.js
 // ==/UserScript==
+
 (function () {
 	'use strict';
 	/**
@@ -217,7 +219,7 @@ function CommonFunction(){
 				-moz-transform: translateX(-50%);
 				-o-transform: translateX(-50%);
 				-ms-transform: translateX(-50%);
-				z-index: 999999999999999999999999999;
+				z-index: 2147483648;
 				white-space: nowrap;
 			}
 			.fadeOut{
@@ -497,7 +499,7 @@ const dialog = (function(){
 				"top": "0px",
 				"bottom":"0px",
 				"right":"0px",
-				"z-index":"9999999999999"
+				"z-index":"2147483647"
 			});
 			
 			this.content = document.createElement('div');
@@ -619,608 +621,617 @@ let functionController = null;
  * 本脚本继承AGPL License协议并开源，在源代码基础上优化了部分逻辑，修复了部分bug，特此申明！！
  */
 const recordBrowsingHistoryKey = "record_browsing_history_mark_key";
-const browsedHtml= `
+const browsedHtml = `
 	<div style="position:absolute;white-space: nowrap; top:7px;padding:2px 5px;font-size:12px;background-color:rgba(0,0,0);color:#FFF;z-index:9999999999;border-radius:20px;right:10px;"><b>已浏览</b></div>
-`
-function QueryCoupon(){
-	this.platforms = ["detail.tmall.com", "item.taobao.com", "item.jd.com", "item.yiyaojd.com", "npcitem.jd.hk", 
-		"detail.tmall.hk", "detail.vip.com", "item.jkcsjd.com", "product.suning.com"];
-	this.createQrcodeIsResult = true;
-	this.isRun=function(){
-		for(var i=0; i<this.platforms.length;i++){
-			if(window.location.host.indexOf(this.platforms[i])!=-1){
-				return true;
-			}
-		}
-		return false;
-	};
-	this.filterName=function(str){
-		if(!str) return "";
-		str = str.replace(/\t/g,"");
-		str = str.replace(/\r/g,"");
-		return encodeURIComponent(str)
-	};
-	this.getGoodsData=async function(platform){
-		var goodsId = "";
-		var goodsName = "";
-		const href = window.location.href;
-		if(platform=="taobao"){
-			goodsId = commonFunctionObject.getParamterQueryUrl(window.location.search, "id");
-			try{
-				const titleObj = document.querySelector("[class^='ItemTitle--']");
-				if(!!titleObj){
-					goodsName = titleObj.textContent;
-				}
-			}catch(e){}
-			
-		}else if(platform=="tmall"){
-			goodsId = commonFunctionObject.getParamterQueryUrl(window.location.search, "id");
-			try{
-				const titleObj = document.querySelector("[class^='ItemTitle--']");
-				if(!!titleObj){
-					goodsName = titleObj.textContent;
-				}
-			}catch(e){}
-			
-		}else if(platform=="jd"){
-			goodsId = commonFunctionObject.getEndHtmlIdByUrl(href);
-			try{
-				const titleObj = document.querySelector("[class='sku-name']");
-				if(!!titleObj){
-					goodsName = titleObj.textContent;
-				}
-			}catch(e){}
-		}else if(platform=="vpinhui"){
-			goodsId = commonFunctionObject.getEndHtmlIdByUrl(href).replace("detail-","");
-			const titleObj = document.querySelector("[class='pib-title-detail']");
-			if(!!titleObj){
-				goodsName = titleObj.textContent;
-			}
-		}else if(platform=="suning"){
-			goodsId = commonFunctionObject.suningParameter(href);
-			const titleObj = document.querySelector("#itemDisplayName");
-			if(!!titleObj){
-				goodsName = titleObj.textContent;
-			}
-		}
-		const data = {"goodsId":goodsId, "goodsName":this.filterName(goodsName)};
-		return data;
-	};
-	this.randomSpmValue=function(){
-		$("meta[name='data-spm']").each(function(){
-			var max = 5000;
-			var min = 1000;
-			var randomValue = Math.floor(Math.random() * (max - min + 1) ) + min;
-			var randomLetter = String.fromCharCode(Math.floor( Math.random() * 26) + "a".charCodeAt(0));
-			$(this).attr("content", randomValue+randomLetter);
-		});
-		$("meta[name='spm-id']").each(function(){
-			var max = 5000;
-			var min = 1000;
-			var randomValue = Math.floor(Math.random() * (max - min + 1) ) + min;
-			var randomLetter = String.fromCharCode(Math.floor( Math.random() * 26) + "a".charCodeAt(0));
-			$(this).attr("content", randomValue+randomLetter);
-		});
-		$("body").find("*").each(function(){
-			$(this).removeAttr("data-spm-anchor-id");
-			$(this).removeAttr("data-spm");
-		});
-	};
-	this.runAliDeceptionSpm=function(){
-		const host = window.location.host;
-		if(host.indexOf("aliyun.com")!=-1 || host.indexOf("taobao.com")!=-1 || host.indexOf("tmall.com")!=-1){
-			this.randomSpmValue();
-			setInterval(()=>{
-				this.randomSpmValue();
-			}, 2000);
-		}
-	};
-	this.browsingHistoryMark=function(platform, goodsId){
-		let histories = commonFunctionObject.GMgetValue(recordBrowsingHistoryKey,[]);
-		let saveContent = platform+"_"+goodsId;
-		if(!histories.includes(saveContent)){
-			histories.unshift(saveContent);
-			commonFunctionObject.GMsetValue(recordBrowsingHistoryKey,histories.slice(0,60));
-		}
-	};
-	this.createHtml=async function(platform, goodsId, goodsName){
-		if(!platform || !goodsId){
-			return "kong";
-		}
-		this.browsingHistoryMark(platform, goodsId); //把浏览记录给存在本地
-		let addition = "";
-		if(platform=="vpinhui"){
-			const vip = goodsId.split("-");
-			addition = vip[0];
-			goodsId = vip[1];
-		}
-		const goodsCouponUrl = "https://tt.shuqiandiqiu.com/api/coupon/discover?no=5&v=1.0.2&pl="+platform+"&id="+goodsId+"&qu="+goodsName+"&addition="+addition;
-		try{
-			const data = await commonFunctionObject.crossRequest("GET", goodsCouponUrl, null);
-			if(data.result=="success" && !!data.data){
-				const json = JSON.parse(data.data);
-				
-				await this.createCoupon(platform, json.data);
-				await this.createQrcode(platform, json.mscan);
-									
-				//开启插入检测
-				let heartms = 0;
-				const HEART_DELAY = 1500, MAX_MS = 1000*30;  
-				const createResultInterval = setInterval(async ()=>{
-					if(this.createQrcodeIsResult){
-						if(document.querySelector("*[name='exist-llkbccxs-9246-hi']") || heartms>=MAX_MS){
-							clearInterval(createResultInterval);
-						}else{
-							await this.createCoupon(platform, json.data);
-						}
-					}
-					heartms += HEART_DELAY;
-				}, HEART_DELAY);
-			}
-		}catch(e){
-			console.log("createCouponHtml:",e);
-		}
-	};
-	this.getHandlerElement=async function(handler){
-		const getElement = async (handler)=>{
-			const promiseArray = [];
-			const handlers = handler.split("@");
-			for(let i=0; i<handlers.length; i++){
-				const eleName = handlers[i];
-				if(!eleName){
-					continue;
-				}
-				if(eleName=="body"){
-					promiseArray.push(
-						new Promise((resolve,reject) =>{ resolve(document.body) }) 
-					);
-				}else if(eleName=="html"){
-					promiseArray.push(
-						new Promise((resolve,reject) =>{ resolve(document.html) }) 
-					);
-				}else{
-					promiseArray.push(commonFunctionObject.getElementObject(eleName, document.body, true, 10, 1500));
-				}
-			}
-			const element = await Promise.race(promiseArray);
-			return element ? element : null;
-		}
+`;
 
-		const element = await getElement(handler);
-		return new Promise((resolve,reject) =>{
-			resolve(element);
-		});
-	};
-	this.createCoupon=async function(platform, result){
-		try{
-			this.createQrcodeIsResult = false;
-			if(!result || result==="null" || !result.hasOwnProperty("css") || !result.hasOwnProperty("html") || !result.hasOwnProperty("handler")){
-				return;
-			}
-			const  cssText = result.css, htmlText = result.html, handler = result.handler, templateId = result.templateId;
-			if(!cssText || !htmlText || !handler){
-				return;
-			}
-			GM_addStyle(cssText);
-
-			// 添加HTML, 需要动态检测元素
-			const handlerElement = await this.getHandlerElement(handler);
-			if(handlerElement){
-				const $handlerElement = $(handlerElement);
-				if(platform=="taobao"){
-					$handlerElement.parent().after(htmlText);
-				}else if(platform=="tmall"){
-					$handlerElement.parent().after(htmlText);
-				}else if(platform=="jd"){
-					$handlerElement.after(htmlText);
-				}else if(platform=="vpinhui"){
-					$handlerElement.after(htmlText);
-				}else if(platform=="suning"){
-					$handlerElement.after(htmlText);
-				}
-			}
-			
-			const $template = $("#"+templateId);
-			if($template.length == 0){
-				return;
-			}
-			
-			const couponId = $template.data("id");
-			const goodsPrivateUrl = "https://tt.shuqiandiqiu.com/api/private/change/coupon?no=5&v=1.0.2&platform="+platform+"&id=";
-			
-			if(!/\d/.test(couponId)){
-				return;
-			}
-			
-			setInterval(()=>{
-				$template.find("*").each(function(){
-					$(this).removeAttr("data-spm-anchor-id");
-				});
-			},400);
-			
-			const couponElementA = $template.find("a[name='cpShUrl']");				
-			couponElementA.unbind("click").bind("click", ()=>{
-				event.stopPropagation();
-				event.preventDefault();
-				commonFunctionObject.crossRequest("GET", goodsPrivateUrl+couponId, null).then((privateResultData)=>{
-					if(privateResultData.result==="success" && !!privateResultData.data){
-						let url = JSON.parse(privateResultData.data).url;
-						if(!!url) GM_openInTab(url, {active:true});
-					}
-				});
-			});
-								
-			//canvas画二维码
-			var $canvasElement = $("#ca"+templateId);
-			if($canvasElement.length == 0){
-				return;
-			}
-			const qrcodeResultData = await commonFunctionObject.crossRequest("GET", goodsPrivateUrl+couponId, null);
-			if(!!qrcodeResultData && qrcodeResultData.result==="success" && !!qrcodeResultData.data){
-				let img = JSON.parse(qrcodeResultData.data).img;
-				if(!!img){
-					var canvasElement = document.getElementById("ca"+templateId);
-					var cxt = canvasElement.getContext("2d");
-					var imgData = new Image();
-					imgData.src = img;
-					imgData.onload=function(){
-						cxt.drawImage(imgData, 0, 0, imgData.width, imgData.height);
-					}
-				}
-			}
-		}catch(e){
-			console.log("~~~~~~~~~~~~~~~~~",e);
-		}finally{
-			this.createQrcodeIsResult = true;
-		}
-	};
-	this.createQrcode=async function(platform, mscan){
-		if(!mscan || mscan==="null" || !mscan.hasOwnProperty("mount") 
-			|| !mscan.hasOwnProperty("html")|| !mscan.hasOwnProperty("qrcode")){
-			return;
-		}
-		const {mount, html, qrcode, iden} = mscan;
-		if(!!mount && !!html && !!qrcode && !!iden){
-			$(mount).append(html);
-			var canvasElement = document.getElementById("mscan"+iden);
-			var width = canvasElement.getAttribute("width");
-			var height = canvasElement.getAttribute("height");
-			var cxt = canvasElement.getContext("2d");
-			var imgData = new Image();
-			imgData.src = qrcode;
-			imgData.onload=function(){
-				cxt.drawImage(imgData, 0, 0, width, height);
-			}
-		}
-	};
-	this.start=async function(){
-		if(this.isRun()){
-			this.runAliDeceptionSpm();
-			const platform = commonFunctionObject.getEcommercePlatform();
-			if(!platform) return;
-			//如果sku太多就折叠,不然移动端体验太差了
-			if(platform=="tmall" || platform=="taobao"){
-				commonFunctionObject.getElementObject("div[class^='skuWrapper--']", document.body, false, 10, 1500).then((skuItemWrapper)=>{
-					if(skuItemWrapper != null){
-						const { style } = skuItemWrapper;
-						style.maxHeight = "400px";
-						style.overflow = "auto";
-					}
-				}).catch(()=>{});
-			}else if(platform=="jd"){
-				const skuItemWrapper = document.querySelector("#choose-attrs");
-				if(skuItemWrapper){
-					const { style } = skuItemWrapper;
-					style.maxHeight = "400px";
-					style.overflow = "auto";
-				}
-			}
-			const goodsData = await this.getGoodsData(platform);
-			this.createHtml(platform, goodsData.goodsId, goodsData.goodsName);
-		}
-	};
+function QueryCoupon() {
+  this.platforms = ["detail.tmall.com", "item.taobao.com", "item.jd.com", "item.yiyaojd.com", "npcitem.jd.hk",
+    "detail.tmall.hk", "detail.vip.com", "item.jkcsjd.com", "product.suning.com"
+  ];
+  this.createQrcodeIsResult = true;
+  this.isRun = function() {
+    for (let i = 0; i < this.platforms.length; i++) {
+      if (window.location.host.indexOf(this.platforms[i]) !== -1) {
+        return true;
+      }
+    }
+    return false;
+  };
+  this.filterName = function(str) {
+    if (!str) return "";
+    str = str.replace(/\t/g, "").replace(/\r/g, "");
+    return encodeURIComponent(str);
+  };
+  this.getGoodsData = async function(platform) {
+    let goodsId = "";
+    let goodsName = "";
+    const href = window.location.href;
+    if (platform === "taobao" || platform === "tmall") {
+      goodsId = commonFunctionObject.getParamterQueryUrl(window.location.search, "id");
+      try {
+        const titleObj = document.querySelector("[class^='ItemTitle--']");
+        if (titleObj) {
+          goodsName = titleObj.textContent;
+        }
+      } catch (e) {}
+    } else if (platform === "jd") {
+      goodsId = commonFunctionObject.getEndHtmlIdByUrl(href);
+      try {
+        const titleObj = document.querySelector(".sku-name");
+        if (titleObj) {
+          goodsName = titleObj.textContent;
+        }
+      } catch (e) {}
+    } else if (platform === "vpinhui") {
+      goodsId = commonFunctionObject.getEndHtmlIdByUrl(href).replace("detail-", "");
+      const titleObj = document.querySelector(".pib-title-detail");
+      if (titleObj) {
+        goodsName = titleObj.textContent;
+      }
+    } else if (platform === "suning") {
+      goodsId = commonFunctionObject.suningParameter(href);
+      const titleObj = document.querySelector("#itemDisplayName");
+      if (titleObj) {
+        goodsName = titleObj.textContent;
+      }
+    }
+    const data = {
+      "goodsId": goodsId,
+      "goodsName": this.filterName(goodsName)
+    };
+    return data;
+  };
+  this.randomSpmValue = function() {
+    document.querySelectorAll("meta[name='data-spm'], meta[name='spm-id']").forEach(meta => {
+      const max = 5000;
+      const min = 1000;
+      const randomValue = Math.floor(Math.random() * (max - min + 1)) + min;
+      const randomLetter = String.fromCharCode(Math.floor(Math.random() * 26) + "a".charCodeAt(0));
+      meta.setAttribute("content", randomValue + randomLetter);
+    });
+    document.body.querySelectorAll("*").forEach(element => {
+      element.removeAttribute("data-spm-anchor-id");
+      element.removeAttribute("data-spm");
+    });
+  };
+  this.runAliDeceptionSpm = function() {
+    const host = window.location.host;
+    if (host.indexOf("aliyun.com") !== -1 || host.indexOf("taobao.com") !== -1 || host.indexOf("tmall.com") !== -1) {
+      this.randomSpmValue();
+      setInterval(() => {
+        this.randomSpmValue();
+      }, 2000);
+    }
+  };
+  this.browsingHistoryMark = function(platform, goodsId) {
+    let histories = commonFunctionObject.GMgetValue(recordBrowsingHistoryKey, []);
+    const saveContent = platform + "_" + goodsId;
+    if (!histories.includes(saveContent)) {
+      histories.unshift(saveContent);
+      commonFunctionObject.GMsetValue(recordBrowsingHistoryKey, histories.slice(0, 60));
+    }
+  };
+  this.createHtml = async function(platform, goodsId, goodsName) {
+    if (!platform || !goodsId) {
+      return "kong";
+    }
+    this.browsingHistoryMark(platform, goodsId);
+    let addition = "";
+    if (platform === "vpinhui") {
+      const vip = goodsId.split("-");
+      addition = vip[0];
+      goodsId = vip[1];
+    }
+    const goodsCouponUrl = "https://tt.shuqiandiqiu.com/api/coupon/discover?no=5&v=1.0.2&pl="+platform+"&id="+goodsId+"&qu="+goodsName+"&addition="+addition;
+    try {
+      const data = await commonFunctionObject.crossRequest("GET", goodsCouponUrl, null);
+      if (data.result === "success" && data.data) {
+        const json = JSON.parse(data.data);
+        await this.createCoupon(platform, json.data);
+        await this.createQrcode(platform, json.mscan);
+        let heartms = 0;
+        const HEART_DELAY = 1500,
+          MAX_MS = 1000 * 30;
+        const createResultInterval = setInterval(async () => {
+          if (this.createQrcodeIsResult) {
+            if (document.querySelector("*[name='exist-llkbccxs-9246-hi']") || heartms >= MAX_MS) {
+              clearInterval(createResultInterval);
+            } else {
+              await this.createCoupon(platform, json.data);
+            }
+          }
+          heartms += HEART_DELAY;
+        }, HEART_DELAY);
+      }
+    } catch (e) {
+      console.log("createCouponHtml:", e);
+    }
+  };
+  this.getHandlerElement = async function(handler) {
+    const getElement = async (handler) => {
+      const promiseArray = [];
+      const handlers = handler.split("@");
+      for (let i = 0; i < handlers.length; i++) {
+        const eleName = handlers[i];
+        if (!eleName) continue;
+        if (eleName === "body") {
+          promiseArray.push(new Promise(resolve => resolve(document.body)));
+        } else if (eleName === "html") {
+          promiseArray.push(new Promise(resolve => resolve(document.documentElement)));
+        } else {
+          promiseArray.push(commonFunctionObject.getElementObject(eleName, document.body, true, 10, 1500));
+        }
+      }
+      const element = await Promise.race(promiseArray);
+      return element || null;
+    };
+    const element = await getElement(handler);
+    return new Promise(resolve => resolve(element));
+  };
+  this.createCoupon = async function(platform, result) {
+    try {
+      this.createQrcodeIsResult = false;
+      if (!result || result === "null" || !result.hasOwnProperty("css") || !result.hasOwnProperty("html") || !result.hasOwnProperty("handler")) {
+        return;
+      }
+      const {
+        css: cssText,
+        html: htmlText,
+        handler,
+        templateId
+      } = result;
+      if (!cssText || !htmlText || !handler) {
+        return;
+      }
+      GM_addStyle(cssText);
+      const handlerElement = await this.getHandlerElement(handler);
+      if (handlerElement) {
+        if (platform === "taobao" || platform === "tmall") {
+          handlerElement.parentNode.insertAdjacentHTML('afterend', htmlText);
+        } else if (platform === "jd" || platform === "vpinhui" || platform === "suning") {
+          handlerElement.insertAdjacentHTML('afterend', htmlText);
+        }
+      }
+      const template = document.getElementById(templateId);
+      if (!template) {
+        return;
+      }
+      const couponId = template.dataset.id;
+      const goodsPrivateUrl = "https://tt.shuqiandiqiu.com/api/private/change/coupon?no=5&v=1.0.2&platform="+platform+"&id=";
+      if (!/\d/.test(couponId)) {
+        return;
+      }
+      setInterval(() => {
+        template.querySelectorAll("*").forEach(el => el.removeAttribute("data-spm-anchor-id"));
+      }, 400);
+      const couponElementA = template.querySelector("a[name='cpShUrl']");
+      if (couponElementA) {
+        couponElementA.addEventListener("click", event => {
+          event.stopPropagation();
+          event.preventDefault();
+          commonFunctionObject.request("GET", goodsPrivateUrl + couponId, null).then(privateResultData => {
+            if (privateResultData.result === "success" && privateResultData.data) {
+              const url = JSON.parse(privateResultData.data).url;
+              if (url) GM_openInTab(url, {
+                active: true
+              });
+            }
+          });
+        });
+      }
+      const canvasElement = document.getElementById(`ca${templateId}`);
+      if (!canvasElement) {
+        return;
+      }
+      const qrcodeResultData = await commonFunctionObject.request("GET", goodsPrivateUrl + couponId, null);
+      if (qrcodeResultData && qrcodeResultData.result === "success" && qrcodeResultData.data) {
+        const img = JSON.parse(qrcodeResultData.data).img;
+        if (img) {
+          const cxt = canvasElement.getContext("2d");
+          const imgData = new Image();
+          imgData.src = img;
+          imgData.onload = function() {
+            cxt.drawImage(imgData, 0, 0, imgData.width, imgData.height);
+          };
+        }
+      }
+    } catch (e) {
+      console.log("~~~~~~~~~~~~~~~~~", e);
+    } finally {
+      this.createQrcodeIsResult = true;
+    }
+  };
+  this.createQrcode = async function(platform, mscan) {
+    if (!mscan || mscan === "null" || !mscan.hasOwnProperty("mount") || !mscan.hasOwnProperty("html") || !mscan.hasOwnProperty("qrcode")) {
+      return;
+    }
+    const {
+      mount,
+      html,
+      qrcode,
+      iden
+    } = mscan;
+    if (mount && html && qrcode && iden) {
+      const mountElement = document.querySelector(mount);
+      if (mountElement) {
+        mountElement.insertAdjacentHTML('beforeend', html);
+        const canvasElement = document.getElementById(`mscan${iden}`);
+        if (canvasElement) {
+          const width = canvasElement.getAttribute("width");
+          const height = canvasElement.getAttribute("height");
+          const cxt = canvasElement.getContext("2d");
+          const imgData = new Image();
+          imgData.src = qrcode;
+          imgData.onload = function() {
+            cxt.drawImage(imgData, 0, 0, width, height);
+          };
+        }
+      }
+    }
+  };
+  this.start = async function() {
+    if (this.isRun()) {
+      this.runAliDeceptionSpm();
+      const platform = commonFunctionObject.getEcommercePlatform();
+      if (!platform) return;
+      if (platform === "tmall" || platform === "taobao") {
+        commonFunctionObject.getElementObject("div[class^='skuWrapper--']", document.body, false, 10, 1500).then(skuItemWrapper => {
+          if (skuItemWrapper) {
+            skuItemWrapper.style.maxHeight = "400px";
+            skuItemWrapper.style.overflow = "auto";
+          }
+        }).catch(() => {});
+      } else if (platform === "jd") {
+        const skuItemWrapper = document.querySelector("#choose-attrs");
+        if (skuItemWrapper) {
+          skuItemWrapper.style.maxHeight = "400px";
+          skuItemWrapper.style.overflow = "auto";
+        }
+      }
+      const goodsData = await this.getGoodsData(platform);
+      this.createHtml(platform, goodsData.goodsId, goodsData.goodsName);
+    }
+  };
 }
 
-function SearchPageObject(){
-	this.intervalIsRunComplete = true;  //定时任务一个循环是否完成
-	this.histories = commonFunctionObject.GMgetValue(recordBrowsingHistoryKey, []);
-	this.isRun = function(){
-		const visitHref = window.location.href;
-		const allows = [
-			/^https:\/\/www\.taobao\.com(\/|\/\?)?/i,//淘宝首页
-			/^https:\/\/s\.taobao\.com/i,
-			/^https:\/\/shop(\d+)\.taobao\.com/i, 
-			/^https:\/\/www\.tmall\.com(\/|\/\?)?/i,//天猫首页
-			/pages\.tmall\.com/i,
-			/list\.tmall\.com/i,
-			/list\.tmall\.hk/i,
-			/tmall\.com\/category/i,
-			/tmall\.com\/search/i,
-			/tmall\.com\/shop/i,
-			/tmall\.com\/\?q=/i,
-			/maiyao\.liangxinyao\.com/i,
-			/^https:\/\/www\.jd\.com(\/|\/\?)?/i, //京东主页
-			/search\.jd\.com/i,
-			/search\.jd\.hk/i,
-			/pro\.jd\.com\/mall/i,
-			/jd\.com\/view_search/i, //商店主页
-			/category\.vip\.com/i,
-			/list\.vip\.com/i,
-			/^https:\/\/(?!product|dfp\.)([^\/]+)\.suning\.com\//i
-		];
-		let isAllow = false;
-		for(let i=0; i<allows.length; i++){
-			if(allows[i].test(visitHref)){
-				isAllow = true;
-				break;
-			}
-		}
-		return isAllow;
-	};
-	
-	this.requestConf=function(){
-		return new Promise((resolve, reject)=>{
-			commonFunctionObject.crossRequest("GET", "https://tt.shuqiandiqiu.com/api/plugin/load/conf", null).then((data)=>{
-				if(data.result=="success" && !!data.data){
-					resolve(data.data);
-				}else{
-					resolve(null);
-				}
-			});
-		});
-	};
-	
-	this.pickupSearchElements=function(conf, platform){ //收集列表的元素
-		const selectorElementList = new Array();
-		const visitHref = window.location.href;
-		let confFilter = conf;
-		try{
-			confFilter = confFilter.replace(/\\\\/g,"\\");
-		}catch(e){}
-		const confJson = JSON.parse(confFilter);
-		
-		if(confJson.hasOwnProperty(platform)){
-			const platformConfJson = confJson[platform];
-			for(let i=0; i<platformConfJson.length; i++){
-				const itemJson = platformConfJson[i];
-				if(!itemJson.hasOwnProperty("elements") || !itemJson.hasOwnProperty("matches")){
-					continue;
-				}
-				const {elements, matches} = itemJson;
-				const isMatch = matches.map((reg)=>(new RegExp(reg, "i")).test(visitHref)).some((res)=>res);
-				if(isMatch){
-					for(let j=0; j<elements.length; j++){
-						selectorElementList.push({
-							"element":elements[j]["element"],
-							"findA":elements[j]["findA"],
-							"page":elements[j]["page"]
-						});
-					}
-				}
-			}
-		}
-		return selectorElementList;
-	};
-	
-	
-	this.createAllElementHtml=function(items){ //为所有的商品创建提示
-		this.intervalIsRunComplete = false;
-		this.processLinksInBatches(items, 18).then((result)=>{
-			this.intervalIsRunComplete = true;
-		});
-	};
-	
-	this.processLinksInBatches = async function(items, batchSize) {
-	    const results = [];
-	    for (let i = 0; i < items.length; i += batchSize) {
-	        const batch = items.slice(i, i + batchSize); // 获取当前批次的链接
-	        const batchResults = await Promise.all(  // 同时处理当前批次中的所有请求
-	            batch.map(item => this.createOneElementHtml(item))
-	        );
-	        results.push(...batchResults); // 保存批次结果
-	    }
-	    return results; // 返回所有结果
-	};
-	
-	/**
-	 * 为商品box添加有券提醒
-	 */
-	this.createOneElementHtml=function(item){  //查询到每个商品list
-		const {element, page, findA} = item;
-		const self = this;
-		return new Promise(function(resolve, reject){
-			if(element.attr("honghaoerbox")){
-				resolve(-10000);
-				return;
-			}
-			element.attr("honghaoerbox","true");
-			element.css("position","relative");
-			element.on("click",function(){
-				$(this).append(browsedHtml);
-			});
-			
-			var goodsDetailUrl = null;
-			if(findA==="this"){
-				goodsDetailUrl = element.attr("href");
-			}else if(/^child@/.test(findA)){
-				const elementA = element.find(findA.replace(/^child@/,""));
-				if(elementA){
-					goodsDetailUrl = elementA.attr("href");
-				}
-			}
-			if(!goodsDetailUrl){
-				resolve(-20000);
-				return;
-			}
-			
-			var analysisData = null;
-			if(page.indexOf("jd_")!=-1){
-				var jdId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl);
-				if(!!jdId) analysisData = {"id":jdId, "platform":"jd"};
-			}else if(page.indexOf("vpinhui_")!=-1){
-				var vipId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl).replace("detail-","");
-				if(!!vipId){
-					analysisData = {"id":vipId.split("-")[1], "platform":"vpinhui"};
-				}
-			}else if(page.indexOf("suning_")!=-1){
-				var suningId = commonFunctionObject.suningParameter(goodsDetailUrl);
-				if(!!suningId){
-					analysisData = {"id":suningId, "platform":"suning"};
-				}
-			}
-			else{
-				var platform = commonFunctionObject.getEcommercePlatform(goodsDetailUrl);
-				var id = commonFunctionObject.getParamterQueryUrl(goodsDetailUrl, "id");
-				if(platform && id){
-					analysisData = {"id":id, "platform":platform};
-				}
-			}
-			if(!analysisData){
-				resolve(-30000);
-				return;
-			}
-			
-			const mark = analysisData.platform + "_" + analysisData.id;
-			if(self.histories.includes(mark)){
-				element.append(browsedHtml);
-			}
-			
-			const searchUrl = "https://j.jiayoushichang.com/api/ebusiness/coupon/exist/"+analysisData.platform+"?id="+analysisData.id;
-			commonFunctionObject.crossRequest("GET", searchUrl, null).then((data)=>{
-				if(data.result=="success" && !!data.data){
-					const { id, tip, encryptLink } = JSON.parse(data.data);
-					if(tip){
-						//console.log("coupon exist", id);
-						element.append(tip);
-					}
-					if(encryptLink){
-						// console.log("jood job!", id);
-						let decryptUrl = null;
-						try{
-							const decryptLink = atob(encryptLink);
-							decryptUrl = decryptLink.split('').reverse().join('');
-						}catch(e){}
-						if(decryptUrl){
-							self.relativeJu(page, element, decryptUrl);
-						}
-					}
-				}
-				resolve(10000);
-			}).catch(()=>{
-				resolve(-40000);
-			});
-		});		
-	};
-	this.relativeJu=function(page, element, decryptUrl){
-		const self = this;
-		try{
-			if(page.indexOf("jd_")!=-1){
-				element.find("a").each(function(){
-					if($(this).attr("href").indexOf("item.jd.com")!=-1){
-						$(this).removeAttr("onclick");
-						$(this).unbind("click").bind("click", function(e){
-							e.preventDefault();
-							e.stopPropagation();
-							commonFunctionObject.GMopenInTab(decryptUrl);
-						});
-					}
-				});
-			}
-			else if(page.indexOf("taobao_")!=-1 || page.indexOf("tmall_")!=-1){
-				element.unbind("click").bind("click",function(e){
-					const target = $(e.target);
-					const tagName = target.prop("tagName").toUpperCase();
-					let isPreventDefault = false;
-					if(tagName==="A"){ //只有点击A标签才去判断
-						const href = target.attr("href");
-						const isDetail = [/detail\.tmall\.com/, /item\.taobao\.com/]
-							.map((reg)=> reg.test(href))
-							.some((result) => result);
-						if(isDetail){
-							isPreventDefault = true;
-						}
-					}else{
-						isPreventDefault = true;
-					}
-					if(isPreventDefault){
-						e.preventDefault();
-						e.stopPropagation();
-						commonFunctionObject.GMopenInTab(decryptUrl);
-					}	
-				});
-			}
-			else if(page.indexOf("vpinhui_")!=-1){
-				element.find("a").each(function(){
-					if($(this).attr("href").indexOf("detail.vip.com/detail-")!=-1){
-						$(this).unbind("click").bind("click", function(e){
-							e.preventDefault();
-							e.stopPropagation();
-							commonFunctionObject.GMopenInTab(decryptUrl);
-						});
-					}
-				});
-			}
-			else if(page.indexOf("suning_")!=-1){
-				element.find("a").each(function(){
-					if($(this).attr("href").indexOf("product.suning.com")!=-1){
-						$(this).unbind("click").bind("click", function(e){
-							e.preventDefault();
-							e.stopPropagation();
-							commonFunctionObject.GMopenInTab(decryptUrl);
-						});
-					}
-				});
-			}
-		}catch(e){
-			console.log(e);
-		}
-	};
-	
-	this.searchPage=function(selectorElementList){
-		const items = [];
-		selectorElementList.forEach((elementData)=>{
-			if(elementData.element){
-				$(elementData.element + ":not([honghaoerbox='true'])").each(function(){
-					items.push({"element":$(this), "findA": elementData.findA, "page":elementData.page});
-				});
-			}
-		});
-		if(items.length>0){
-			this.createAllElementHtml(items);
-		}
-	};
-	
-	this.start=function(){
-		if(this.isRun()){
-			const platform = commonFunctionObject.getEcommercePlatform();
-			this.requestConf().then((conf)=>{
-				const selectorElementList = this.pickupSearchElements(conf, (platform=="tmall"? "taobao" : platform));
-				if(this.intervalIsRunComplete){
-					this.searchPage(selectorElementList);
-				}
-				setInterval(()=>{
-					if(this.intervalIsRunComplete){
-						this.searchPage(selectorElementList);
-					}
-				}, 1500);
-			});
-		}
-	};
+function SearchPageObject() {
+  this.intervalIsRunComplete = true;
+  this.histories = commonFunctionObject.GMgetValue(recordBrowsingHistoryKey, []);
+  this.isRun = function() {
+    const visitHref = window.location.href;
+    const allows = [
+      /^https:\/\/www\.taobao\.com(\/|\/\?)?/i,
+      /^https:\/\/s\.taobao\.com/i,
+      /^https:\/\/shop(\d+)\.taobao\.com/i,
+      /^https:\/\/www\.tmall\.com(\/|\/\?)?/i,
+      /pages\.tmall\.com/i,
+      /list\.tmall\.com/i,
+      /list\.tmall\.hk/i,
+      /tmall\.com\/category/i,
+      /tmall\.com\/search/i,
+      /tmall\.com\/shop/i,
+      /tmall\.com\/\?q=/i,
+      /maiyao\.liangxinyao\.com/i,
+      /^https:\/\/www\.jd\.com(\/|\/\?)?/i,
+      /search\.jd\.com/i,
+      /search\.jd\.hk/i,
+      /pro\.jd\.com\/mall/i,
+      /jd\.com\/view_search/i,
+      /category\.vip\.com/i,
+      /list\.vip\.com/i,
+      /^https:\/\/(?!product|dfp\.)([^\/]+)\.suning\.com\//i
+    ];
+    return allows.some(reg => reg.test(visitHref));
+  };
+  this.requestConf = function() {
+    return new Promise((resolve, reject) => {
+      commonFunctionObject.crossRequest("GET", "https://tt.shuqiandiqiu.com/api/plugin/load/conf", null).then(data => {
+        if (data.result === "success" && data.data) {
+          resolve(data.data);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  };
+  this.pickupSearchElements = function(conf, platform) {
+    const selectorElementList = [];
+    const visitHref = window.location.href;
+    let confFilter = conf;
+    try {
+      confFilter = confFilter.replace(/\\\\/g, "\\");
+    } catch (e) {}
+    const confJson = JSON.parse(confFilter);
+    if (confJson.hasOwnProperty(platform)) {
+      const platformConfJson = confJson[platform];
+      for (let i = 0; i < platformConfJson.length; i++) {
+        const itemJson = platformConfJson[i];
+        if (!itemJson.hasOwnProperty("elements") || !itemJson.hasOwnProperty("matches")) {
+          continue;
+        }
+        const {
+          elements,
+          matches
+        } = itemJson;
+        const isMatch = matches.map(reg => (new RegExp(reg, "i")).test(visitHref)).some(res => res);
+        if (isMatch) {
+          for (let j = 0; j < elements.length; j++) {
+            selectorElementList.push({
+              "element": elements[j]["element"],
+              "findA": elements[j]["findA"],
+              "page": elements[j]["page"],
+              "extra": elements[j]["extra"]
+            });
+          }
+        }
+      }
+    }
+    return selectorElementList;
+  };
+  this.createAllElementHtml = function(items) {
+    this.intervalIsRunComplete = false;
+    this.processLinksInBatches(items, 18).then(() => {
+      this.intervalIsRunComplete = true;
+    });
+  };
+  this.processLinksInBatches = async function(items, batchSize) {
+    const results = [];
+    for (let i = 0; i < items.length; i += batchSize) {
+      const batch = items.slice(i, i + batchSize);
+      const batchResults = await Promise.all(
+        batch.map(item => this.createOneElementHtml(item))
+      );
+      results.push(...batchResults);
+    }
+    return results;
+  };
+  this.getAnchorElement = function(element, findA) {
+    let finalElement = null;
+    if (findA === "this") {
+      finalElement = element;
+    } else {
+      finalElement = element.querySelector(findA.replace(/^child@/, ""));
+    }
+    return finalElement;
+  };
+  this.createOneElementHtml = function(item) {
+    const {
+      element,
+      page,
+      findA,
+      extra
+    } = item;
+    const self = this;
+    return new Promise(function(resolve) {
+      if (element.getAttribute("honghaoerbox")) {
+        resolve(-10000);
+        return;
+      }
+      element.setAttribute("honghaoerbox", "true");
+      element.style.position = "relative";
+      element.addEventListener("click", function() {
+        this.insertAdjacentHTML('beforeend', browsedHtml);
+      });
+      const finalElement = self.getAnchorElement(element, findA);
+      if (!finalElement) {
+        resolve(-30000);
+        return;
+      }
+      let goodsDetailUrl = null;
+      let isAnchorA = true;
+      if (extra) {
+        const {
+          durl,
+          attribute
+        } = extra;
+        const attributeValue = finalElement.getAttribute(attribute);
+        if (attributeValue) {
+          goodsDetailUrl = durl.replace("@", attributeValue);
+          isAnchorA = false;
+        }
+      } else {
+        goodsDetailUrl = finalElement.getAttribute("href");
+      }
+      if (!goodsDetailUrl) {
+        resolve(-20000);
+        return;
+      }
+      let analysisData = null;
+      if (page.indexOf("jd_") !== -1) {
+        const jdId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl);
+        if (jdId) analysisData = {
+          "id": jdId,
+          "platform": "jd"
+        };
+      } else if (page.indexOf("vpinhui_") !== -1) {
+        const vipId = commonFunctionObject.getEndHtmlIdByUrl(goodsDetailUrl).replace("detail-", "");
+        if (vipId) {
+          analysisData = {
+            "id": vipId.split("-")[1],
+            "platform": "vpinhui"
+          };
+        }
+      } else if (page.indexOf("suning_") !== -1) {
+        const suningId = commonFunctionObject.suningParameter(goodsDetailUrl);
+        if (suningId) {
+          analysisData = {
+            "id": suningId,
+            "platform": "suning"
+          };
+        }
+      } else {
+        const platform = commonFunctionObject.getEcommercePlatform(goodsDetailUrl);
+        const id = commonFunctionObject.getParamterQueryUrl(goodsDetailUrl, "id");
+        if (platform && id) {
+          analysisData = {
+            "id": id,
+            "platform": platform
+          };
+        }
+      }
+      if (!analysisData) {
+        resolve(-30000);
+        return;
+      }
+      const mark = analysisData.platform + "_" + analysisData.id;
+      if (self.histories.includes(mark)) {
+        element.insertAdjacentHTML('beforeend', browsedHtml);
+      }
+      const searchUrl = "https://j.jiayoushichang.com/api/ebusiness/coupon/exist/"+analysisData.platform+"?no=5&id="+analysisData.id;
+      commonFunctionObject.crossRequest("GET", searchUrl, null).then(data => {
+        if (data.result === "success" && data.data) {
+          const {
+            id,
+            tip,
+            encryptLink
+          } = JSON.parse(data.data);
+          if (tip) {
+            element.insertAdjacentHTML('beforeend', tip);
+          }
+          if (encryptLink) {
+            let decryptUrl = null;
+            try {
+              const decryptLink = atob(encryptLink);
+              decryptUrl = decryptLink.split('').reverse().join('');
+            } catch (e) {}
+            if (decryptUrl) {
+              if (isAnchorA) {
+                self.relativeAnchorAJu(page, element, decryptUrl);
+              } else {
+                self.relativeJu(element, decryptUrl);
+              }
+            }
+          }
+        }
+        resolve(10000);
+      }).catch(() => {
+        resolve(-40000);
+      });
+    });
+  };
+  this.relativeJu = function(element, decryptUrl) {
+    element.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      commonFunctionObject.GMopenInTab(decryptUrl);
+    }, true);
+  };
+  this.relativeAnchorAJu = function(page, element, decryptUrl) {
+    const self = this;
+    try {
+      if (page.indexOf("jd_") !== -1) {
+        element.querySelectorAll("a").forEach(a => {
+          const href = a.getAttribute("href");
+          if (/item\.jd|npcitem\.jd/.test(href)) {
+            a.removeAttribute("onclick");
+            a.addEventListener("click", function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              commonFunctionObject.GMopenInTab(decryptUrl);
+            }, true);
+          }
+        });
+      } else if (page.indexOf("taobao_") !== -1 || page.indexOf("tmall_") !== -1) {
+        element.addEventListener("click", function(e) {
+          const target = e.target;
+          const tagName = target.tagName.toUpperCase();
+          let isPreventDefault = false;
+          if (tagName === "A") {
+            const href = target.getAttribute("href");
+            const isDetail = [/detail\.tmall\.com/, /item\.taobao\.com/]
+              .some(reg => reg.test(href));
+            if (isDetail) {
+              isPreventDefault = true;
+            }
+          } else {
+            isPreventDefault = true;
+          }
+          if (isPreventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+            commonFunctionObject.GMopenInTab(decryptUrl);
+          }
+        }, true);
+      } else if (page.indexOf("vpinhui_") !== -1) {
+        element.querySelectorAll("a").forEach(a => {
+          const href = a.getAttribute("href");
+          if (href && href.indexOf("detail.vip.com/detail-") !== -1) {
+            a.addEventListener("click", function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              commonFunctionObject.GMopenInTab(decryptUrl);
+            }, true);
+          }
+        });
+      } else if (page.indexOf("suning_") !== -1) {
+        element.querySelectorAll("a").forEach(a => {
+          const href = a.getAttribute("href");
+          if (href && href.indexOf("product.suning.com") !== -1) {
+            a.addEventListener("click", function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              commonFunctionObject.GMopenInTab(decryptUrl);
+            }, true);
+          }
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  this.searchPage = function(selectorElementList) {
+    const items = [];
+    selectorElementList.forEach(elementData => {
+      if (elementData.element) {
+        document.querySelectorAll(elementData.element + ":not([honghaoerbox='true'])").forEach(el => {
+          items.push({
+            "element": el,
+            "findA": elementData.findA,
+            "extra": elementData.extra,
+            "page": elementData.page
+          });
+        });
+      }
+    });
+    if (items.length > 0) {
+      this.createAllElementHtml(items);
+    }
+  };
+  this.start = function() {
+    if (this.isRun()) {
+      const platform = commonFunctionObject.getEcommercePlatform();
+      this.requestConf().then(conf => {
+        const selectorElementList = this.pickupSearchElements(conf, (platform === "tmall" ? "taobao" : platform));
+        if (this.intervalIsRunComplete) {
+          this.searchPage(selectorElementList);
+        }
+        setInterval(() => {
+          if (this.intervalIsRunComplete) {
+            this.searchPage(selectorElementList);
+          }
+        }, 1500);
+      });
+    }
+  };
 }
-try{
-	(new SearchPageObject()).start();
-	(new QueryCoupon()).start();
-	
-	if(/taobao|jd|tmall|jkcsjd|vip|vipglobal|yiyaojd|liangxinyao|suning/.test(window.location.host)){
-		GM_registerMenuCommand("清除商品浏览记录", ()=> {
-			if(confirm('此弹窗来自脚本-[🔥]!!网购小助手,不花冤枉钱\n是否要移除所有的浏览记录？移除后将不可恢复...')){
-				commonFunctionObject.GMsetValue(recordBrowsingHistoryKey,[]); //已浏览标识
-			}
-		});
-	}
-}catch(e){
-	console.log("优惠券查询：error："+e);
+
+try {
+  (new SearchPageObject()).start();
+  (new QueryCoupon()).start();
+  if (/taobao|jd|tmall|jkcsjd|vip|vipglobal|yiyaojd|liangxinyao|suning/.test(window.location.host)) {
+    GM_registerMenuCommand("清除商品浏览记录", () => {
+      if (confirm('此弹窗来自脚本-[🔥]!!网购小助手,不花冤枉钱\n是否要移除所有的浏览记录？移除后将不可恢复...')) {
+        commonFunctionObject.GMsetValue(recordBrowsingHistoryKey, []);
+      }
+    });
+  }
+} catch (e) {
+  console.log("优惠券查询：error：" + e);
 }
+	
+	
+	
 	
 	
 	
